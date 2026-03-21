@@ -14,19 +14,20 @@ class RemoteDatasourceImpl implements RemoteDatasource {
 
   @override
   Future<LoginModel> login(String login, String password) async {
-    final response = await client.post(
-      Uri.parse("${ApiClient.baseUrl}/login"),
-      headers: {"Content-Type": "application/json"},
-      body: json.encode({"username": login, "password": password}),
-    );
-    if (response.statusCode == 200) {
-      return LoginModel.fromJson(json.decode(response.body));
-    } else {
-      throw ErrorModel(
-          status: "error",
-          message: "Login failed with status code ${response.statusCode}",
-          validation: null
+    try {
+      final response = await client.post(
+        Uri.parse("${ApiClient.baseUrl}/login"),
+        headers: {"Content-Type": "application/json"},
+        body: json.encode({"username": login, "password": password}),
       );
+      if (response.statusCode == 200) {
+        return LoginModel.fromJson(json.decode(response.body));
+      } else {
+        final error = ErrorModel.fromJson(json.decode(response.body));
+        throw error;
+      }
+    } catch (e) {
+      throw ErrorModel(status: "error", message: e.toString(), validation: null);
     }
   }
 }
