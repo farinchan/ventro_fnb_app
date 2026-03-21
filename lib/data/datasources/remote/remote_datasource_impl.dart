@@ -1,6 +1,6 @@
 import 'dart:convert';
+import 'dart:developer';
 
-import 'package:http/http.dart';
 import 'package:ventro_fnb_app/core/network/api_client.dart';
 import 'package:ventro_fnb_app/data/datasources/remote_datasource.dart';
 import 'package:ventro_fnb_app/data/models/error_model.dart';
@@ -20,14 +20,20 @@ class RemoteDatasourceImpl implements RemoteDatasource {
         headers: {"Content-Type": "application/json"},
         body: json.encode({"login": login, "password": password}),
       );
+      final payload = json.decode(response.body)["data"];
+
+      print("Login response: ${payload.toString()}");
+
       if (response.statusCode == 200) {
-        return LoginModel.fromJson(json.decode(response.body));
+        return LoginModel.fromJson(payload);
       } else {
-        final error = ErrorModel.fromJson(json.decode(response.body));
+        final error = ErrorModel.fromJson(payload);
         throw error;
-        
       }
+    } on ErrorModel {
+      rethrow;
     } catch (e) {
+      log('Login error: $e', name: 'RemoteDatasourceImpl', error: e);
       throw ErrorModel(status: "error", message: e.toString(), validation: null);
     }
   }

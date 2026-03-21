@@ -13,6 +13,7 @@ class RepositoryDomainImpl implements RepositoryDomain {
   Future<Either<ErrorEntity, LoginEntity>> login(String username, String password) async {
     try {
       final result = await remoteDatasource.login(username, password);
+      print('Login successful: ${result.toEntity()}');
       return Right(result.toEntity());
     } on ErrorModel catch (e) {
       return Left(e.toEntity());
