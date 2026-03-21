@@ -18,13 +18,14 @@ class RemoteDatasourceImpl implements RemoteDatasource {
       final response = await client.post(
         Uri.parse("${ApiClient.baseUrl}/login"),
         headers: {"Content-Type": "application/json"},
-        body: json.encode({"username": login, "password": password}),
+        body: json.encode({"login": login, "password": password}),
       );
       if (response.statusCode == 200) {
         return LoginModel.fromJson(json.decode(response.body));
       } else {
         final error = ErrorModel.fromJson(json.decode(response.body));
         throw error;
+        
       }
     } catch (e) {
       throw ErrorModel(status: "error", message: e.toString(), validation: null);

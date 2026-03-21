@@ -8,11 +8,11 @@ sealed class LoginEvent extends Equatable {
 }
 
 final class LoginRequested extends LoginEvent {
-  final String username;
+  final String login;
   final String password;
 
-  const LoginRequested({required this.username, required this.password});
+  const LoginRequested({required this.login, required this.password});
 
   @override
-  List<Object> get props => [username, password];
+  List<Object> get props => [login, password];
 }

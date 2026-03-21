@@ -10,11 +10,16 @@ part 'login_state.dart';
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   GetLogin getLogin;
   LoginBloc({required this.getLogin}) : super(LoginInitial()) {
-    on<LoginRequested>((event, emit) {
+    on<LoginRequested>((event, emit) async {
       emit(LoginLoading());
-      getLogin(event.username, event.password).then((result) {
-        result.fold((error) => emit(LoginFailure(error)), (login) => emit(LoginSuccess(login)));
-      });
+
+      final result = await getLogin(event.login, event.password);
+      if (emit.isDone) return;
+
+      result.fold(
+        (error) => emit(LoginFailure(error)),
+        (login) => emit(LoginSuccess(login)),
+      );
     });
   }
 }

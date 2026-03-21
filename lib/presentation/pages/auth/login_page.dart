@@ -31,125 +31,132 @@ class _LoginPageState extends State<LoginPage> {
       final password = _passwordController.text;
 
       debugPrint('Login attempt: $username / $password');
-      context.read<LoginBloc>().add(LoginRequested(username: username, password: password));
+      context.read<LoginBloc>().add(LoginRequested(login: username, password: password));
       // context.goNamed(HomePage.routeName);
 
-      Future.delayed(const Duration(seconds: 2), () {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Login berhasil!')));
-        }
-      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset('assets/illustrations/auth.png'),
-                SizedBox(height: 16),
-                Text(
-                  "Login",
-                  style: (Theme.of(context).textTheme.titleLarge ?? const TextStyle()).copyWith(
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-
-                const SizedBox(height: 16),
-                // Username
-                TextFormCustom(
-                  controller: _usernameController,
-                  labelText: 'Username',
-                  hintText: 'Masukkan username',
-                  textInputAction: TextInputAction.next,
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Username tidak boleh kosong';
-                    }
-                    return null;
-                  },
-                ),
-
-                const SizedBox(height: 16),
-
-                // Password
-                TextFormCustom(
-                  controller: _passwordController,
-                  obscureText: true,
-                  labelText: 'Password',
-                  hintText: 'Masukkan password',
-                  textInputAction: TextInputAction.done,
-                  onFieldSubmitted: (_) => _login(),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Password tidak boleh kosong';
-                    }
-                    if (value.length < 6) {
-                      return 'Password minimal 6 karakter';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 8),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: GestureDetector(
-                    onTap: () {
-                      // context.goNamed(ForgetPasswordPage.routeName);
-                    },
-                    child: Text(
-                      "Lupa Kata sandi?",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.normal,
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // Login Button
-                ElevatedButton(
-                  onPressed: () {
-                    _login();
-                  },
-                  child: Text("Login"),
-                  style: ElevatedButton.styleFrom(minimumSize: Size(double.infinity, 48)),
-                ),
-                const SizedBox(height: 16),
-                Row(
+    return BlocConsumer<LoginBloc, LoginState>(
+      listener: (context, state) {
+        if (state is LoginFailure) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Login gagal: ${state.error.message}')));
+        } else if (state is LoginSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Login berhasil!')));
+          // context.goNamed(HomePage.routeName);
+        }
+      },
+      builder: (context, state) {
+        return Scaffold(
+          body: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Form(
+                key: _formKey,
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Belum punya akun? "),
-                    GestureDetector(
-                      onTap: () {
-                        // context.goNamed(RegisterPage.routeName);
+                    // Image.asset('assets/illustrations/auth.png'),
+                    SizedBox(height: 16),
+                    Text(
+                      "Login",
+                      style: (Theme.of(context).textTheme.titleLarge ?? const TextStyle()).copyWith(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+
+                    const SizedBox(height: 16),
+                    // Username
+                    TextFormCustom(
+                      controller: _usernameController,
+                      labelText: 'Username',
+                      hintText: 'Masukkan username',
+                      textInputAction: TextInputAction.next,
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Username tidak boleh kosong';
+                        }
+                        return null;
                       },
-                      child: Text(
-                        "Daftar",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.normal,
-                          decoration: TextDecoration.underline,
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // Password
+                    TextFormCustom(
+                      controller: _passwordController,
+                      obscureText: true,
+                      labelText: 'Password',
+                      hintText: 'Masukkan password',
+                      textInputAction: TextInputAction.done,
+                      onFieldSubmitted: (_) => _login(),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Password tidak boleh kosong';
+                        }
+                        if (value.length < 6) {
+                          return 'Password minimal 6 karakter';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 8),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: GestureDetector(
+                        onTap: () {
+                          // context.goNamed(ForgetPasswordPage.routeName);
+                        },
+                        child: Text(
+                          "Lupa Kata sandi?",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.normal,
+                            decoration: TextDecoration.underline,
+                          ),
                         ),
                       ),
                     ),
+                    const SizedBox(height: 16),
+
+                    // Login Button
+                    ElevatedButton(
+                      onPressed: () {
+                        _login();
+                      },
+                      child: Text("Login"),
+                      style: ElevatedButton.styleFrom(minimumSize: Size(double.infinity, 48)),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("Belum punya akun? "),
+                        GestureDetector(
+                          onTap: () {
+                            // context.goNamed(RegisterPage.routeName);
+                          },
+                          child: Text(
+                            "Daftar",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.normal,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
