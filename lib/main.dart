@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ventro_fnb_app/core/routes/app_router.dart';
 import 'package:ventro_fnb_app/core/styles/theme/app_theme.dart';
 import 'package:ventro_fnb_app/presentation/bloc/login/login_bloc.dart';
+import 'package:ventro_fnb_app/presentation/bloc/outlet_list/outlet_list_bloc.dart';
 
 void main() {
   init();
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => getIt<LoginBloc>()),
+        BlocProvider(create: (context) => getIt<OutletListBloc>()),
       ],
       child: MaterialApp.router(
         title: 'Localapak Merchant App',

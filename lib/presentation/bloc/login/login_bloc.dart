@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:ventro_fnb_app/data/datasources/local_datasource.dart';
 import 'package:ventro_fnb_app/domain/entities/error_entity.dart';
 import 'package:ventro_fnb_app/domain/entities/login_entity.dart';
 import 'package:ventro_fnb_app/domain/usecase/get_login.dart';
@@ -18,7 +19,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
       result.fold(
         (error) => emit(LoginFailure(error)),
-        (login) => emit(LoginSuccess(login)),
+        (login) {
+          LocalDatasource().saveToken(login.token);
+          emit(LoginSuccess(login));
+        }
       );
     });
   }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ventro_fnb_app/presentation/bloc/login/login_bloc.dart';
+import 'package:ventro_fnb_app/presentation/pages/auth/select_outlet_page.dart';
+import 'package:ventro_fnb_app/presentation/pages/pos/cashier_page.dart';
 import 'package:ventro_fnb_app/presentation/widgets/text_form_custom.dart';
 
 class LoginPage extends StatefulWidget {
@@ -33,7 +35,6 @@ class _LoginPageState extends State<LoginPage> {
       debugPrint('Login attempt: $username / $password');
       context.read<LoginBloc>().add(LoginRequested(login: username, password: password));
       // context.goNamed(HomePage.routeName);
-
     }
   }
 
@@ -45,7 +46,7 @@ class _LoginPageState extends State<LoginPage> {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Login gagal: ${state.error.message}')));
         } else if (state is LoginSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Login berhasil!')));
-          // context.goNamed(HomePage.routeName);
+          context.goNamed(SelectOutletPage.routeName);
         }
       },
       builder: (context, state) {
