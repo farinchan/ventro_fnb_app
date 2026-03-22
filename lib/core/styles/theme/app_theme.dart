@@ -4,44 +4,91 @@ import 'package:ventro_fnb_app/core/styles/typography/app_typography.dart';
 
 class AppTheme {
   static ThemeData get lightTheme {
+    final colorScheme = ColorScheme.fromSeed(
+      seedColor: const Color(0xFFE63946), // Premium Crimson Red
+      primary: const Color(0xFFE63946),
+      secondary: const Color(0xFFF4A261),
+      tertiary: const Color(0xFF2A9D8F),
+      surface: const Color(0xFFF8F9FA),
+      brightness: Brightness.light,
+    );
+
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      scaffoldBackgroundColor: const Color(0xFFF3F3F3),
+      scaffoldBackgroundColor: colorScheme.surface,
+      colorScheme: colorScheme,
+      fontFamily: GoogleFonts.poppins().fontFamily,
+      textTheme: _textTheme,
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFFF0000),
-          foregroundColor: const Color(0xFFFFFFFF),
+          elevation: 0,
+          backgroundColor: colorScheme.primary,
+          foregroundColor: colorScheme.onPrimary,
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
-          textStyle: AppTypography.titleMedium,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+          textStyle: AppTypography.titleMedium.copyWith(fontWeight: FontWeight.w600),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         ),
       ),
-      fontFamily: GoogleFonts.poppins().fontFamily,
-      colorScheme: const ColorScheme.light(
-        primary: Color(0xFFFF0000),
-        onPrimary: Color(0xFFFFFFFF),
-        background: Color(0xFFF3F3F3),
-        onBackground: Color(0xFF000000),
-        secondary: Color(0xFF00A859),
-        tertiary: Color(0xFFFF0000),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          elevation: 0,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+        ),
       ),
-      textTheme: _textTheme,
+      cardTheme: CardThemeData(
+        elevation: 4,
+        shadowColor: Colors.black.withValues(alpha: 0.04),
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      ),
+      dividerTheme: DividerThemeData(
+        color: colorScheme.outlineVariant.withValues(alpha: 0.3),
+        space: 1,
+      ),
     );
   }
 
   static ThemeData get darkTheme {
+    final colorScheme = ColorScheme.fromSeed(
+      seedColor: const Color(0xFFE63946),
+      primary: const Color(0xFFE63946),
+      secondary: const Color(0xFFF4A261),
+      tertiary: const Color(0xFF2A9D8F),
+      brightness: Brightness.dark,
+    );
+
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
+      colorScheme: colorScheme,
       fontFamily: GoogleFonts.poppins().fontFamily,
-      colorScheme: const ColorScheme.dark(
-        primary: Color(0xFFFF0000),
-        onPrimary: Color(0xFFFFFFFF),
-        secondary: Color(0xFF00A859),
-        tertiary: Color(0xFFFF0000),
-      ),
+      scaffoldBackgroundColor: const Color(0xFF121212),
       textTheme: _textTheme,
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          elevation: 0,
+          backgroundColor: colorScheme.primary,
+          foregroundColor: colorScheme.onPrimary,
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+          textStyle: AppTypography.titleMedium.copyWith(fontWeight: FontWeight.w600),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        ),
+      ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          elevation: 0,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+        ),
+      ),
+      cardTheme: CardThemeData(
+        elevation: 4,
+        shadowColor: Colors.black.withValues(alpha: 0.3),
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      ),
     );
   }
 

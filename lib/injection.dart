@@ -4,8 +4,12 @@ import 'package:ventro_fnb_app/data/datasources/remote/remote_datasource_impl.da
 import 'package:ventro_fnb_app/data/datasources/remote_datasource.dart';
 import 'package:ventro_fnb_app/data/repositories/repository_domain_impl.dart';
 import 'package:ventro_fnb_app/domain/repositories/repository_domain.dart';
+import 'package:ventro_fnb_app/domain/usecase/get_category_list.dart';
 import 'package:ventro_fnb_app/domain/usecase/get_login.dart';
 import 'package:ventro_fnb_app/domain/usecase/get_outlet_list.dart';
+import 'package:ventro_fnb_app/domain/usecase/get_product_list.dart';
+import 'package:ventro_fnb_app/presentation/bloc/cashier/cashier_bloc.dart';
+import 'package:ventro_fnb_app/presentation/bloc/category/category_bloc.dart';
 import 'package:ventro_fnb_app/presentation/bloc/login/login_bloc.dart';
 import 'package:ventro_fnb_app/presentation/bloc/outlet_list/outlet_list_bloc.dart';
 
@@ -15,10 +19,14 @@ void init() {
   //bloc
   getIt.registerFactory(() => LoginBloc(getLogin: getIt()));
   getIt.registerFactory(() => OutletListBloc(getOutletList: getIt()));
+  getIt.registerFactory(() => CashierBloc(getProductList: getIt()));
+  getIt.registerFactory(() => CategoryBloc(getCategoryList: getIt()));
 
   // Use cases
   getIt.registerLazySingleton(() => GetLogin(repository: getIt()));
   getIt.registerLazySingleton(() => GetOutletList(repository: getIt()));
+  getIt.registerLazySingleton(() => GetProductList(repository: getIt()));
+  getIt.registerLazySingleton(() => GetCategoryList(repository: getIt()));
 
    // Repositories
   getIt.registerLazySingleton<RepositoryDomain>(

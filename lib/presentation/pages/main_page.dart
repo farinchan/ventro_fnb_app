@@ -159,10 +159,10 @@ class _AppSidebar extends StatelessWidget {
       footerDivider: divider,
       headerBuilder: (context, extended) {
         return SizedBox(
-          height: 100,
+          // height: 100,
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Image.network('https://picsum.photos/200'),
+            child: Image.network('https://picsum.photos/500'),
           ),
         );
       },
@@ -192,6 +192,7 @@ class _AppSidebar extends StatelessWidget {
           label: 'Flutter',
           onTap: () => onNavigate(3),
         ),
+        
       ],
     );
   }
