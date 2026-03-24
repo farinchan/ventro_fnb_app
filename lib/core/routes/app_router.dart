@@ -43,7 +43,11 @@ class AppRouter {
       return null;
     }),
     routes: [
-      GoRoute(path: loginPath, name: LoginPage.routeName, builder: (context, state) => const LoginPage()),
+      GoRoute(
+        path: loginPath,
+        name: LoginPage.routeName,
+        builder: (context, state) => const LoginPage(),
+      ),
       GoRoute(
         path: selectOutletPath,
         name: SelectOutletPage.routeName,
@@ -54,21 +58,28 @@ class AppRouter {
         navigatorKey: _shellNavigatorKey,
         builder: (context, state, child) => MainPage(child: child),
         routes: [
-          GoRoute(path: cashierPath, name: CashierPage.routeName, builder: (context, state) => const CashierPage()),
+          GoRoute(
+            path: cashierPath,
+            name: CashierPage.routeName,
+            builder: (context, state) => CashierPage(),
+          ),
           GoRoute(
             path: searchPath,
             name: 'search',
-            builder: (context, state) => const PlaceholderContentPage(title: 'Search Page'),
+            builder: (context, state) =>
+                const PlaceholderContentPage(title: 'Search Page'),
           ),
           GoRoute(
             path: peoplePath,
             name: 'people',
-            builder: (context, state) => const PlaceholderContentPage(title: 'People Page'),
+            builder: (context, state) =>
+                const PlaceholderContentPage(title: 'People Page'),
           ),
           GoRoute(
             path: flutterPath,
             name: 'flutter',
-            builder: (context, state) => const PlaceholderContentPage(title: 'Flutter Page'),
+            builder: (context, state) =>
+                const PlaceholderContentPage(title: 'Flutter Page'),
           ),
         ],
       ),

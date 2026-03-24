@@ -71,6 +71,7 @@ class CartItem extends Equatable {
   final String variantName;
   final int qty;
   final int price;
+  final String? notes;
 
   const CartItem({
     required this.id,
@@ -81,9 +82,10 @@ class CartItem extends Equatable {
     required this.variantName,
     required this.qty,
     required this.price,
+    this.notes,
   });
 
-  CartItem copyWith({int? qty}) {
+  CartItem copyWith({int? qty, String? notes}) {
     return CartItem(
       id: id,
       productId: productId,
@@ -93,9 +95,10 @@ class CartItem extends Equatable {
       variantName: variantName,
       qty: qty ?? this.qty,
       price: price,
+      notes: notes ?? this.notes,
     );
   }
 
   @override
-  List<Object?> get props => [id, productId, productName, productImage, variantId, variantName, qty, price];
+  List<Object?> get props => [id, productId, productName, productImage, variantId, variantName, qty, price, notes];
 }

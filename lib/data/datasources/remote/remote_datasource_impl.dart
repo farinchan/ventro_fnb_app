@@ -10,6 +10,7 @@ import 'package:ventro_fnb_app/data/models/login_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:ventro_fnb_app/data/models/outlet_model.dart';
 import 'package:ventro_fnb_app/data/models/product_mode.dart';
+import 'package:ventro_fnb_app/data/models/user_model.dart';
 
 class RemoteDatasourceImpl implements RemoteDatasource {
   final http.Client client;
@@ -36,7 +37,45 @@ class RemoteDatasourceImpl implements RemoteDatasource {
       rethrow;
     } catch (e) {
       log('Login error: $e', name: 'RemoteDatasourceImpl', error: e);
-      throw ErrorModel(status: "error", message: e.toString(), validation: null);
+      throw ErrorModel(
+        status: "error",
+        message: e.toString(),
+        validation: null,
+      );
+    }
+  }
+
+  @override
+  Future<UserModel> profile() async {
+    try {
+      var token = await LocalDatasource().getToken();
+      var outletId = await LocalDatasource().getOutletId();
+      final response = await client.get(
+        Uri.parse("${ApiClient.baseUrl}/profile"),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+          "X-Outlet-ID": "$outletId",
+        },
+      );
+
+      final payload = json.decode(response.body)["data"];
+
+      if (response.statusCode == 200) {
+        return UserModel.fromJson(payload);
+      } else {
+        final error = ErrorModel.fromJson(payload);
+        throw error;
+      }
+    } on ErrorModel {
+      rethrow;
+    } catch (e) {
+      log('Profile error: $e', name: 'RemoteDatasourceImpl', error: e);
+      throw ErrorModel(
+        status: "error",
+        message: e.toString(),
+        validation: null,
+      );
     }
   }
 
@@ -46,7 +85,10 @@ class RemoteDatasourceImpl implements RemoteDatasource {
       var token = await LocalDatasource().getToken();
       final response = await client.get(
         Uri.parse("${ApiClient.baseUrl}/outlets-list"),
-        headers: {"Content-Type": "application/json", "Authorization": "Bearer $token"},
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+        },
       );
 
       final payload = json.decode(response.body)["data"];
@@ -61,7 +103,45 @@ class RemoteDatasourceImpl implements RemoteDatasource {
       rethrow;
     } catch (e) {
       log('Outlet list error: $e', name: 'RemoteDatasourceImpl', error: e);
-      throw ErrorModel(status: "error", message: e.toString(), validation: null);
+      throw ErrorModel(
+        status: "error",
+        message: e.toString(),
+        validation: null,
+      );
+    }
+  }
+
+  @override
+  Future<OutletModel> outletDetail() async {
+    try {
+      var token = await LocalDatasource().getToken();
+      var outletId = await LocalDatasource().getOutletId();
+      final response = await client.get(
+        Uri.parse("${ApiClient.baseUrl}/outlet"),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+          "X-Outlet-ID": "$outletId",
+        },
+      );
+
+      final payload = json.decode(response.body)["data"];
+
+      if (response.statusCode == 200) {
+        return OutletModel.fromJson(payload);
+      } else {
+        final error = ErrorModel.fromJson(payload);
+        throw error;
+      }
+    } on ErrorModel {
+      rethrow;
+    } catch (e) {
+      log('Outlet detail error: $e', name: 'RemoteDatasourceImpl', error: e);
+      throw ErrorModel(
+        status: "error",
+        message: e.toString(),
+        validation: null,
+      );
     }
   }
 
@@ -72,7 +152,11 @@ class RemoteDatasourceImpl implements RemoteDatasource {
       var outletId = await LocalDatasource().getOutletId();
       final response = await client.get(
         Uri.parse("${ApiClient.baseUrl}/categories"),
-        headers: {"Content-Type": "application/json", "Authorization": "Bearer $token", "X-Outlet-ID": "$outletId"},
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+          "X-Outlet-ID": "$outletId",
+        },
       );
 
       final payload = json.decode(response.body)["data"];
@@ -87,7 +171,11 @@ class RemoteDatasourceImpl implements RemoteDatasource {
       rethrow;
     } catch (e) {
       log('Category list error: $e', name: 'RemoteDatasourceImpl', error: e);
-      throw ErrorModel(status: "error", message: e.toString(), validation: null);
+      throw ErrorModel(
+        status: "error",
+        message: e.toString(),
+        validation: null,
+      );
     }
   }
 
@@ -98,7 +186,11 @@ class RemoteDatasourceImpl implements RemoteDatasource {
       var outletId = await LocalDatasource().getOutletId();
       final response = await client.get(
         Uri.parse("${ApiClient.baseUrl}/products"),
-        headers: {"Content-Type": "application/json", "Authorization": "Bearer $token", "X-Outlet-ID": "$outletId"},
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+          "X-Outlet-ID": "$outletId",
+        },
       );
 
       final payload = json.decode(response.body)["data"];
@@ -113,7 +205,11 @@ class RemoteDatasourceImpl implements RemoteDatasource {
       rethrow;
     } catch (e) {
       log('Product list error: $e', name: 'RemoteDatasourceImpl', error: e);
-      throw ErrorModel(status: "error", message: e.toString(), validation: null);
+      throw ErrorModel(
+        status: "error",
+        message: e.toString(),
+        validation: null,
+      );
     }
   }
 
@@ -123,7 +219,10 @@ class RemoteDatasourceImpl implements RemoteDatasource {
       var token = await LocalDatasource().getToken();
       final response = await client.get(
         Uri.parse("${ApiClient.baseUrl}/products/$productId"),
-        headers: {"Content-Type": "application/json", "Authorization": "Bearer $token"},
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+        },
       );
 
       final payload = json.decode(response.body)["data"];
@@ -138,9 +237,11 @@ class RemoteDatasourceImpl implements RemoteDatasource {
       rethrow;
     } catch (e) {
       log('Product detail error: $e', name: 'RemoteDatasourceImpl', error: e);
-      throw ErrorModel(status: "error", message: e.toString(), validation: null);
+      throw ErrorModel(
+        status: "error",
+        message: e.toString(),
+        validation: null,
+      );
     }
   }
-
-  
 }

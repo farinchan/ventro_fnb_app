@@ -63,6 +63,17 @@ class CashierSearchProducts extends CashierEvent {
   List<Object> get props => [query];
 }
 
+/// Update the note of a specific cart item.
+class CashierUpdateCartItemNote extends CashierEvent {
+  final String cartItemId;
+  final String note;
+
+  const CashierUpdateCartItemNote({required this.cartItemId, required this.note});
+
+  @override
+  List<Object> get props => [cartItemId, note];
+}
+
 /// Filter products by a specific category (pass null for all).
 class CashierSelectCategory extends CashierEvent {
   final CategoryEntity? category;
