@@ -4,6 +4,7 @@ import 'package:ventro_fnb_app/data/models/outlet_model.dart';
 import 'package:ventro_fnb_app/data/models/product_mode.dart';
 import 'package:ventro_fnb_app/data/models/sale_mode_model.dart';
 import 'package:ventro_fnb_app/data/models/table_model.dart';
+import 'package:ventro_fnb_app/data/models/tax_model.dart';
 import 'package:ventro_fnb_app/data/models/user_model.dart';
 
 abstract class RemoteDatasource {
@@ -18,4 +19,5 @@ abstract class RemoteDatasource {
 
   Future<List<SaleModeModel>> saleModeList();
   Future<List<TableModel>> tableList();
+  Future<List<TaxModel>> taxList();
 }

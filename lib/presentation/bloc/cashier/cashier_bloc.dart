@@ -3,16 +3,33 @@ import 'package:equatable/equatable.dart';
 import 'package:ventro_fnb_app/domain/entities/error_entity.dart';
 import 'package:ventro_fnb_app/domain/entities/product_entity.dart';
 import 'package:ventro_fnb_app/domain/entities/category_entity.dart';
+import 'package:ventro_fnb_app/domain/entities/sale_mode_entity.dart';
+import 'package:ventro_fnb_app/domain/entities/table_entity.dart';
+import 'package:ventro_fnb_app/domain/entities/tax_entity.dart';
 import 'package:ventro_fnb_app/domain/usecase/get_product_list.dart';
+import 'package:ventro_fnb_app/domain/usecase/get_sale_mode_list.dart';
+import 'package:ventro_fnb_app/domain/usecase/get_table_list.dart';
+import 'package:ventro_fnb_app/domain/usecase/get_tax_list.dart';
 
 part 'cashier_event.dart';
 part 'cashier_state.dart';
 
 class CashierBloc extends Bloc<CashierEvent, CashierState> {
   final GetProductList getProductList;
+  final GetSaleModeList getSaleModeList;
+  final GetTableList getTableList;
+  final GetTaxList getTaxList;
 
-  CashierBloc({required this.getProductList}) : super(const CashierState()) {
+  CashierBloc({
+    required this.getProductList,
+    required this.getSaleModeList,
+    required this.getTableList,
+    required this.getTaxList,
+  }) : super(const CashierState()) {
     on<CashierLoadProducts>(_onLoadProducts);
+    on<CashierLoadSaleMode>(_onLoadSaleMode);
+    on<CashierLoadTable>(_onLoadTable);
+    on<CashierLoadTax>(_onLoadTax);
     on<CashierAddToCart>(_onAddToCart);
     on<CashierRemoveFromCart>(_onRemoveFromCart);
     on<CashierIncrementQty>(_onIncrementQty);
@@ -34,6 +51,51 @@ class CashierBloc extends Bloc<CashierEvent, CashierState> {
           emit(state.copyWith(status: CashierStatus.error, error: error)),
       (products) => emit(
         state.copyWith(status: CashierStatus.loaded, products: products),
+      ),  
+    );
+  }
+
+  Future<void> _onLoadSaleMode(
+    CashierLoadSaleMode event,
+    Emitter<CashierState> emit,
+  ) async {
+    emit(state.copyWith(status: CashierStatus.loading));
+    final result = await getSaleModeList();
+    result.fold(
+      (error) =>
+          emit(state.copyWith(status: CashierStatus.error, error: error)),
+      (saleModeList) => emit(
+        state.copyWith(status: CashierStatus.loaded, saleModeList: saleModeList),
+      ),
+    );
+  }
+
+  Future<void> _onLoadTable(
+    CashierLoadTable event,
+    Emitter<CashierState> emit,
+  ) async {
+    emit(state.copyWith(status: CashierStatus.loading));
+    final result = await getTableList();
+    result.fold(
+      (error) =>
+          emit(state.copyWith(status: CashierStatus.error, error: error)),
+      (tableList) => emit(
+        state.copyWith(status: CashierStatus.loaded, tableList: tableList),
+      ),
+    );
+  }
+
+  Future<void> _onLoadTax(
+    CashierLoadTax event,
+    Emitter<CashierState> emit,
+  ) async {
+    emit(state.copyWith(status: CashierStatus.loading));
+    final result = await getTaxList();
+    result.fold(
+      (error) =>
+          emit(state.copyWith(status: CashierStatus.error, error: error)),
+      (taxList) => emit(
+        state.copyWith(status: CashierStatus.loaded, taxList: taxList),
       ),
     );
   }

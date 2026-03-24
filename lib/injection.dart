@@ -12,7 +12,8 @@ import 'package:ventro_fnb_app/domain/usecase/get_product_list.dart';
 import 'package:ventro_fnb_app/domain/usecase/get_profile.dart';
 import 'package:ventro_fnb_app/domain/usecase/get_sale_mode_list.dart';
 import 'package:ventro_fnb_app/domain/usecase/get_table_list.dart';
-import 'package:ventro_fnb_app/presentation/bloc/bloc/table_list_bloc.dart';
+import 'package:ventro_fnb_app/domain/usecase/get_tax_list.dart';
+import 'package:ventro_fnb_app/presentation/bloc/table/table_list_bloc.dart';
 import 'package:ventro_fnb_app/presentation/bloc/cashier/cashier_bloc.dart';
 import 'package:ventro_fnb_app/presentation/bloc/category/category_bloc.dart';
 import 'package:ventro_fnb_app/presentation/bloc/login/login_bloc.dart';
@@ -25,9 +26,18 @@ final getIt = GetIt.instance;
 void init() {
   //bloc
   getIt.registerFactory(() => LoginBloc(getLogin: getIt()));
-  getIt.registerFactory(() => ProfileBloc(getProfile: getIt(), getOutletDetail: getIt()));
+  getIt.registerFactory(
+    () => ProfileBloc(getProfile: getIt(), getOutletDetail: getIt()),
+  );
   getIt.registerFactory(() => OutletListBloc(getOutletList: getIt()));
-  getIt.registerFactory(() => CashierBloc(getProductList: getIt()));
+  getIt.registerFactory(
+    () => CashierBloc(
+      getProductList: getIt(),
+      getSaleModeList: getIt(),
+      getTableList: getIt(),
+      getTaxList: getIt(),
+    ),
+  );
   getIt.registerFactory(() => CategoryBloc(getCategoryList: getIt()));
   getIt.registerFactory(() => SaleModeListBloc(getSaleModeList: getIt()));
   getIt.registerFactory(() => TableListBloc(getTableList: getIt()));
@@ -41,14 +51,17 @@ void init() {
   getIt.registerLazySingleton(() => GetCategoryList(repository: getIt()));
   getIt.registerLazySingleton(() => GetSaleModeList(repository: getIt()));
   getIt.registerLazySingleton(() => GetTableList(repository: getIt()));
+  getIt.registerLazySingleton(() => GetTaxList(repository: getIt()));
 
-   // Repositories
+  // Repositories
   getIt.registerLazySingleton<RepositoryDomain>(
-      () => RepositoryDomainImpl(remoteDatasource: getIt()));
+    () => RepositoryDomainImpl(remoteDatasource: getIt()),
+  );
 
   // Data sources
   getIt.registerLazySingleton<RemoteDatasource>(
-      () => RemoteDatasourceImpl(client: getIt()));
+    () => RemoteDatasourceImpl(client: getIt()),
+  );
 
   // Http service
   getIt.registerLazySingleton(() => http.Client());

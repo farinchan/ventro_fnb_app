@@ -355,9 +355,19 @@ class _CashierPageState extends State<CashierPage> {
                                         ),
                                       ),
                                     ),
-                                    if (state.cartItems.isNotEmpty) ...[
-                                      const SizedBox(width: 4),
-                                      IconButton(
+                                    const SizedBox(width: 4),
+                                    Visibility(
+                                      visible: state.cartItems.isNotEmpty,
+                                      maintainSize: true,
+                                      maintainAnimation: true,
+                                      maintainState: true,
+                                      child: IconButton(
+                                        visualDensity: VisualDensity( 
+                                          vertical:
+                                              VisualDensity.minimumDensity,
+                                        ),
+                                        padding: EdgeInsets.zero,
+                                        constraints: BoxConstraints(),
                                         icon: Icon(
                                           Icons.delete_sweep_outlined,
                                           size: 20,
@@ -368,10 +378,46 @@ class _CashierPageState extends State<CashierPage> {
                                             .read<CashierBloc>()
                                             .add(const CashierClearCart()),
                                       ),
-                                    ],
+                                    ),
                                   ],
                                 ),
                               ),
+                              const SizedBox(height: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                ),
+                                child: DropdownButtonFormField(
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      borderSide: BorderSide(
+                                        color: theme.colorScheme.primary,
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      borderSide: BorderSide(
+                                        color: theme.colorScheme.primary,
+                                      ),
+                                    ),
+                                  ),
+                                  items: state.saleModeList
+                                      .map(
+                                        (saleMode) => DropdownMenuItem(
+                                          value: saleMode,
+                                          child: Text(saleMode.name ?? ''),
+                                        ),
+                                      )
+                                      .toList(),
+                                  initialValue: state.saleModeList.isNotEmpty
+                                      ? state.saleModeList.first
+                                      : null,
+                                  onChanged: (value) {},
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+
                               Divider(height: 1, color: theme.dividerColor),
                               Expanded(
                                 child: state.cartItems.isEmpty
@@ -431,10 +477,49 @@ class _CashierPageState extends State<CashierPage> {
                             Row(
                               children: [
                                 Expanded(
+                                  child: Text(
+                                    "Subtotal",
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                ),
+                                Text(
+                                  _currency(state.subtotal),
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    color: theme.primaryColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            ...state.addTaxValue.map((tax) {
+                              return Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      '${tax.name} (${tax.percent}%)',
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                  ),
+                                  Text(
+                                    _currency(tax.value ?? 0),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      color: theme.primaryColor,
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }),
+                            SizedBox(height: 8),
+                            Row(
+                              children: [
+                                Expanded(
                                   child: ElevatedButton.icon(
                                     onPressed: () {},
-                                    icon: Icon(Icons.payment),
-                                    label: Text('Simpan'),
+                                    icon: Icon(Icons.discount),
+                                    label: Text('Kupon'),
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.white,
                                       foregroundColor: Theme.of(
@@ -457,7 +542,7 @@ class _CashierPageState extends State<CashierPage> {
                                   child: ElevatedButton.icon(
                                     onPressed: () {},
                                     icon: Icon(Icons.print),
-                                    label: Text('Print'),
+                                    label: Text('Cetak'),
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.white,
                                       foregroundColor: Theme.of(
@@ -484,7 +569,7 @@ class _CashierPageState extends State<CashierPage> {
                                 onPressed: () {},
                                 icon: Icon(Icons.payment),
                                 label: Text(
-                                  'Bayar | ' + _currency(state.subtotal),
+                                  'Proses | ' + _currency(state.total),
                                 ),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.red,

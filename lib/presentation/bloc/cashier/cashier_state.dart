@@ -5,6 +5,9 @@ enum CashierStatus { initial, loading, loaded, error }
 class CashierState extends Equatable {
   final CashierStatus status;
   final List<ProductEntity> products;
+  final List<SaleModeEntity> saleModeList;
+  final List<TableEntity> tableList;
+  final List<TaxEntity> taxList;
   final List<CartItem> cartItems;
   final String searchQuery;
   final CategoryEntity? selectedCategory;
@@ -13,6 +16,9 @@ class CashierState extends Equatable {
   const CashierState({
     this.status = CashierStatus.initial,
     this.products = const [],
+    this.saleModeList = const [],
+    this.tableList = const [],
+    this.taxList = const [],
     this.cartItems = const [],
     this.searchQuery = '',
     this.selectedCategory,
@@ -39,13 +45,24 @@ class CashierState extends Equatable {
     return filtered;
   }
 
+ 
+
   /// Subtotal price of all items in the cart.
   num get subtotal =>
       cartItems.fold(0, (sum, item) => sum + (item.qty * item.price));
 
+  List<TaxEntity> get addTaxValue => taxList.map((tax) {
+    return tax.copyWith(value: (num.tryParse(tax.percent ?? '0') ?? 0) * subtotal / 100);
+  }).toList();
+
+  num get total => subtotal + addTaxValue.fold(0, (sum, tax) => sum + (tax.value ?? 0));
+
   CashierState copyWith({
     CashierStatus? status,
     List<ProductEntity>? products,
+    List<SaleModeEntity>? saleModeList,
+    List<TableEntity>? tableList,
+    List<TaxEntity>? taxList,
     List<CartItem>? cartItems,
     String? searchQuery,
     CategoryEntity? selectedCategory,
@@ -55,6 +72,9 @@ class CashierState extends Equatable {
     return CashierState(
       status: status ?? this.status,
       products: products ?? this.products,
+      saleModeList: saleModeList ?? this.saleModeList,
+      tableList: tableList ?? this.tableList,
+      taxList: taxList ?? this.taxList,
       cartItems: cartItems ?? this.cartItems,
       searchQuery: searchQuery ?? this.searchQuery,
       selectedCategory: clearCategory
@@ -68,6 +88,9 @@ class CashierState extends Equatable {
   List<Object?> get props => [
     status,
     products,
+    saleModeList,
+    tableList,
+    taxList,
     cartItems,
     searchQuery,
     selectedCategory,

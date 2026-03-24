@@ -12,6 +12,27 @@ class CashierLoadProducts extends CashierEvent {
   const CashierLoadProducts();
 }
 
+class CashierLoadSaleMode extends CashierEvent {
+  const CashierLoadSaleMode();
+
+  @override
+  List<Object> get props => [];
+}
+
+class CashierLoadTable extends CashierEvent {
+  const CashierLoadTable();
+
+  @override
+  List<Object> get props => [];
+}
+
+class CashierLoadTax extends CashierEvent {
+  const CashierLoadTax();
+
+  @override
+  List<Object> get props => [];
+}
+
 /// Add a product variant to the cart, or increment its quantity if already present.
 class CashierAddToCart extends CashierEvent {
   final ProductEntity product;
