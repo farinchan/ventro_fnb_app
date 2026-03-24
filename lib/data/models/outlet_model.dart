@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:equatable/equatable.dart';
 import 'package:ventro_fnb_app/domain/entities/outlet_entity.dart';
 

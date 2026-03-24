@@ -1,14 +1,15 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:ventro_fnb_app/domain/entities/coupon_entity.dart';
 import 'package:ventro_fnb_app/domain/entities/error_entity.dart';
 import 'package:ventro_fnb_app/domain/entities/product_entity.dart';
 import 'package:ventro_fnb_app/domain/entities/category_entity.dart';
 import 'package:ventro_fnb_app/domain/entities/sale_mode_entity.dart';
-import 'package:ventro_fnb_app/domain/entities/table_entity.dart';
 import 'package:ventro_fnb_app/domain/entities/tax_entity.dart';
+import 'package:ventro_fnb_app/domain/usecase/get_coupon_detail.dart';
+import 'package:ventro_fnb_app/domain/usecase/get_coupon_list.dart';
 import 'package:ventro_fnb_app/domain/usecase/get_product_list.dart';
 import 'package:ventro_fnb_app/domain/usecase/get_sale_mode_list.dart';
-import 'package:ventro_fnb_app/domain/usecase/get_table_list.dart';
 import 'package:ventro_fnb_app/domain/usecase/get_tax_list.dart';
 
 part 'cashier_event.dart';
@@ -17,18 +18,19 @@ part 'cashier_state.dart';
 class CashierBloc extends Bloc<CashierEvent, CashierState> {
   final GetProductList getProductList;
   final GetSaleModeList getSaleModeList;
-  final GetTableList getTableList;
+  final GetCouponList getCouponList;
   final GetTaxList getTaxList;
 
   CashierBloc({
     required this.getProductList,
     required this.getSaleModeList,
-    required this.getTableList,
+    required this.getCouponList,
     required this.getTaxList,
   }) : super(const CashierState()) {
     on<CashierLoadProducts>(_onLoadProducts);
     on<CashierLoadSaleMode>(_onLoadSaleMode);
-    on<CashierLoadTable>(_onLoadTable);
+    on<CashierLoadCoupon>(_onLoadCoupon);
+    on<CashierApplyCoupon>(_onApplyCoupon);
     on<CashierLoadTax>(_onLoadTax);
     on<CashierAddToCart>(_onAddToCart);
     on<CashierRemoveFromCart>(_onRemoveFromCart);
@@ -70,17 +72,35 @@ class CashierBloc extends Bloc<CashierEvent, CashierState> {
     );
   }
 
-  Future<void> _onLoadTable(
-    CashierLoadTable event,
+  Future<void> _onLoadCoupon(
+    CashierLoadCoupon event,
     Emitter<CashierState> emit,
   ) async {
     emit(state.copyWith(status: CashierStatus.loading));
-    final result = await getTableList();
+    final result = await getCouponList();
     result.fold(
       (error) =>
           emit(state.copyWith(status: CashierStatus.error, error: error)),
-      (tableList) => emit(
-        state.copyWith(status: CashierStatus.loaded, tableList: tableList),
+      (couponList) => emit(
+        state.copyWith(status: CashierStatus.loaded, couponList: couponList),
+      ),
+    );
+  }
+
+  Future<void> _onApplyCoupon(
+    CashierApplyCoupon event,
+    Emitter<CashierState> emit,
+  ) async {
+    final couponCode = event.couponCode;
+    final couponId = event.couponId;
+    final discount = event.discount;
+    
+    emit(
+      state.copyWith(
+        status: CashierStatus.loaded,
+        couponCode: couponCode,
+        couponId: couponId,
+        discount: discount,
       ),
     );
   }

@@ -6,9 +6,12 @@ class CashierState extends Equatable {
   final CashierStatus status;
   final List<ProductEntity> products;
   final List<SaleModeEntity> saleModeList;
-  final List<TableEntity> tableList;
+  final List<CouponEntity> couponList;
   final List<TaxEntity> taxList;
   final List<CartItem> cartItems;
+  final String? couponCode;
+  final int? couponId;
+  final num? discount;
   final String searchQuery;
   final CategoryEntity? selectedCategory;
   final ErrorEntity? error;
@@ -17,9 +20,12 @@ class CashierState extends Equatable {
     this.status = CashierStatus.initial,
     this.products = const [],
     this.saleModeList = const [],
-    this.tableList = const [],
+    this.couponList = const [],
     this.taxList = const [],
     this.cartItems = const [],
+    this.couponCode,
+    this.couponId,
+    this.discount,
     this.searchQuery = '',
     this.selectedCategory,
     this.error,
@@ -45,25 +51,35 @@ class CashierState extends Equatable {
     return filtered;
   }
 
- 
-
   /// Subtotal price of all items in the cart.
   num get subtotal =>
       cartItems.fold(0, (sum, item) => sum + (item.qty * item.price));
 
+  num get subtotalWithDiscount {
+    final result = subtotal - (discount ?? 0);
+    return result < 0 ? 0 : result;
+  }
+
   List<TaxEntity> get addTaxValue => taxList.map((tax) {
-    return tax.copyWith(value: (num.tryParse(tax.percent ?? '0') ?? 0) * subtotal / 100);
+    return tax.copyWith(
+      value: (num.tryParse(tax.percent ?? '0') ?? 0) * subtotalWithDiscount / 100,
+    );
   }).toList();
 
-  num get total => subtotal + addTaxValue.fold(0, (sum, tax) => sum + (tax.value ?? 0));
+
+  num get total =>
+      subtotalWithDiscount + addTaxValue.fold(0, (sum, tax) => sum + (tax.value ?? 0));
 
   CashierState copyWith({
     CashierStatus? status,
     List<ProductEntity>? products,
     List<SaleModeEntity>? saleModeList,
-    List<TableEntity>? tableList,
+    List<CouponEntity>? couponList,
     List<TaxEntity>? taxList,
     List<CartItem>? cartItems,
+    String? couponCode,
+    int? couponId,
+    num? discount,
     String? searchQuery,
     CategoryEntity? selectedCategory,
     bool clearCategory = false,
@@ -73,9 +89,12 @@ class CashierState extends Equatable {
       status: status ?? this.status,
       products: products ?? this.products,
       saleModeList: saleModeList ?? this.saleModeList,
-      tableList: tableList ?? this.tableList,
+      couponList: couponList ?? this.couponList,
       taxList: taxList ?? this.taxList,
       cartItems: cartItems ?? this.cartItems,
+      couponCode: couponCode ?? this.couponCode,
+      couponId: couponId ?? this.couponId,
+      discount: discount ?? this.discount,
       searchQuery: searchQuery ?? this.searchQuery,
       selectedCategory: clearCategory
           ? null
@@ -89,9 +108,12 @@ class CashierState extends Equatable {
     status,
     products,
     saleModeList,
-    tableList,
+    couponList, 
     taxList,
     cartItems,
+    couponCode,
+    couponId,
+    discount,
     searchQuery,
     selectedCategory,
     error,

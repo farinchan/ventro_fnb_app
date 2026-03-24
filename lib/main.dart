@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ventro_fnb_app/core/routes/app_router.dart';
 import 'package:ventro_fnb_app/core/styles/theme/app_theme.dart';
-import 'package:ventro_fnb_app/presentation/bloc/table/table_list_bloc.dart';
+import 'package:ventro_fnb_app/presentation/bloc/coupon_detail/coupon_detail_bloc.dart';
+import 'package:ventro_fnb_app/presentation/bloc/table_list/table_list_bloc.dart';
 import 'package:ventro_fnb_app/presentation/bloc/cashier/cashier_bloc.dart';
 import 'package:ventro_fnb_app/presentation/bloc/category/category_bloc.dart';
 import 'package:ventro_fnb_app/presentation/bloc/login/login_bloc.dart';
@@ -39,14 +40,15 @@ class MyApp extends StatelessWidget {
           create: (context) => getIt<CashierBloc>()
             ..add(const CashierLoadProducts())
             ..add(const CashierLoadSaleMode())
-            ..add(const CashierLoadTable())
+            ..add(const CashierLoadCoupon())
             ..add(const CashierLoadTax()),
         ),
         BlocProvider(create: (context) => getIt<SaleModeListBloc>()),
         BlocProvider(create: (context) => getIt<TableListBloc>()),
+        BlocProvider(create: (context) => getIt<CouponDetailBloc>()),
       ],
       child: MaterialApp.router(
-        title: 'Localapak Merchant App',
+        title: 'Ventro FNB',
         darkTheme: AppTheme.darkTheme,
         theme: AppTheme.lightTheme,
         themeMode: ThemeMode.light,

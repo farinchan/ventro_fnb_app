@@ -5,6 +5,8 @@ import 'package:ventro_fnb_app/data/datasources/remote_datasource.dart';
 import 'package:ventro_fnb_app/data/repositories/repository_domain_impl.dart';
 import 'package:ventro_fnb_app/domain/repositories/repository_domain.dart';
 import 'package:ventro_fnb_app/domain/usecase/get_category_list.dart';
+import 'package:ventro_fnb_app/domain/usecase/get_coupon_detail.dart';
+import 'package:ventro_fnb_app/domain/usecase/get_coupon_list.dart';
 import 'package:ventro_fnb_app/domain/usecase/get_login.dart';
 import 'package:ventro_fnb_app/domain/usecase/get_outlet_detail.dart';
 import 'package:ventro_fnb_app/domain/usecase/get_outlet_list.dart';
@@ -13,7 +15,8 @@ import 'package:ventro_fnb_app/domain/usecase/get_profile.dart';
 import 'package:ventro_fnb_app/domain/usecase/get_sale_mode_list.dart';
 import 'package:ventro_fnb_app/domain/usecase/get_table_list.dart';
 import 'package:ventro_fnb_app/domain/usecase/get_tax_list.dart';
-import 'package:ventro_fnb_app/presentation/bloc/table/table_list_bloc.dart';
+import 'package:ventro_fnb_app/presentation/bloc/coupon_detail/coupon_detail_bloc.dart';
+import 'package:ventro_fnb_app/presentation/bloc/table_list/table_list_bloc.dart';
 import 'package:ventro_fnb_app/presentation/bloc/cashier/cashier_bloc.dart';
 import 'package:ventro_fnb_app/presentation/bloc/category/category_bloc.dart';
 import 'package:ventro_fnb_app/presentation/bloc/login/login_bloc.dart';
@@ -34,13 +37,14 @@ void init() {
     () => CashierBloc(
       getProductList: getIt(),
       getSaleModeList: getIt(),
-      getTableList: getIt(),
+      getCouponList: getIt(),
       getTaxList: getIt(),
     ),
   );
   getIt.registerFactory(() => CategoryBloc(getCategoryList: getIt()));
   getIt.registerFactory(() => SaleModeListBloc(getSaleModeList: getIt()));
   getIt.registerFactory(() => TableListBloc(getTableList: getIt()));
+  getIt.registerFactory(() => CouponDetailBloc(getCouponDetail: getIt()));
 
   // Use cases
   getIt.registerLazySingleton(() => GetLogin(repository: getIt()));
@@ -52,6 +56,9 @@ void init() {
   getIt.registerLazySingleton(() => GetSaleModeList(repository: getIt()));
   getIt.registerLazySingleton(() => GetTableList(repository: getIt()));
   getIt.registerLazySingleton(() => GetTaxList(repository: getIt()));
+  getIt.registerLazySingleton(() => GetCouponList(repository: getIt()));
+  getIt.registerLazySingleton(() => GetCouponDetail(repository: getIt()));
+  
 
   // Repositories
   getIt.registerLazySingleton<RepositoryDomain>(

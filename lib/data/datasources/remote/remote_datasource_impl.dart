@@ -5,6 +5,7 @@ import 'package:ventro_fnb_app/core/network/api_client.dart';
 import 'package:ventro_fnb_app/data/datasources/local_datasource.dart';
 import 'package:ventro_fnb_app/data/datasources/remote_datasource.dart';
 import 'package:ventro_fnb_app/data/models/category_model.dart';
+import 'package:ventro_fnb_app/data/models/coupon_model.dart';
 import 'package:ventro_fnb_app/data/models/error_model.dart';
 import 'package:ventro_fnb_app/data/models/login_model.dart';
 import 'package:http/http.dart' as http;
@@ -344,6 +345,71 @@ class RemoteDatasourceImpl implements RemoteDatasource {
       rethrow;
     } catch (e) {
       log('Tax list error: $e', name: 'RemoteDatasourceImpl', error: e);
+      throw ErrorModel(
+        status: "error",
+        message: e.toString(),
+        validation: null,
+      );
+    }
+  }
+
+  @override
+  Future<List<CouponModel>> couponList() async {
+    try {
+      var token = await LocalDatasource().getToken();
+      var outletId = await LocalDatasource().getOutletId();
+      final response = await client.get(
+        Uri.parse("${ApiClient.baseUrl}/coupons"),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+          "X-Outlet-ID": "$outletId",
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final payload = json.decode(response.body)["data"];
+        return (payload as List).map((e) => CouponModel.fromJson(e)).toList();
+      } else {
+        final error = ErrorModel.fromJson(json.decode(response.body));
+        throw error;
+      }
+    } on ErrorModel {
+      rethrow;
+    } catch (e) {
+      log('Coupon list error: $e', name: 'RemoteDatasourceImpl', error: e);
+      throw ErrorModel(
+        status: "error",
+        message: e.toString(),
+        validation: null,
+      );
+    }
+  }
+
+  @override
+  Future<CouponModel> couponDetail(String code) async {
+    try {
+      var token = await LocalDatasource().getToken();
+      var outletId = await LocalDatasource().getOutletId();
+      final response = await client.get(
+        Uri.parse("${ApiClient.baseUrl}/coupons/$code"),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+          "X-Outlet-ID": "$outletId",
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return CouponModel.fromJson(json.decode(response.body)["data"]);
+      } else {
+        final error = ErrorModel.fromJson(json.decode(response.body));
+        throw error;
+      }
+    } on ErrorModel {
+      rethrow;
+    } catch (e) {
+      log('Coupon detail error: $e', name: 'RemoteDatasourceImpl', error: e);
       throw ErrorModel(
         status: "error",
         message: e.toString(),

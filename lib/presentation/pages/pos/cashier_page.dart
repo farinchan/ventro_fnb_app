@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:ventro_fnb_app/domain/entities/product_entity.dart';
 import 'package:ventro_fnb_app/presentation/bloc/cashier/cashier_bloc.dart';
 import 'package:ventro_fnb_app/presentation/bloc/category/category_bloc.dart';
+import 'package:ventro_fnb_app/presentation/bloc/coupon_detail/coupon_detail_bloc.dart';
 
 class CashierPage extends StatefulWidget {
   static const String routeName = 'cashier';
@@ -56,7 +57,14 @@ class _CashierPageState extends State<CashierPage> {
         padding: const EdgeInsets.all(8.0),
         child: BlocConsumer<CashierBloc, CashierState>(
           listener: (context, state) {
-            // TODO: implement listener
+            if (state.error != null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.error?.message ?? 'Error'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
           },
           builder: (context, state) {
             return Row(
@@ -362,7 +370,7 @@ class _CashierPageState extends State<CashierPage> {
                                       maintainAnimation: true,
                                       maintainState: true,
                                       child: IconButton(
-                                        visualDensity: VisualDensity( 
+                                        visualDensity: VisualDensity(
                                           vertical:
                                               VisualDensity.minimumDensity,
                                         ),
@@ -492,6 +500,25 @@ class _CashierPageState extends State<CashierPage> {
                                 ),
                               ],
                             ),
+                            if (state.discount != null && state.discount! > 0)
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      "Kupon - ${state.couponCode ?? ''}",
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                  ),
+                                  Text(
+                                    _currency(-(state.discount ?? 0)),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      color: theme.primaryColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ...state.addTaxValue.map((tax) {
                               return Row(
                                 children: [
@@ -517,7 +544,7 @@ class _CashierPageState extends State<CashierPage> {
                               children: [
                                 Expanded(
                                   child: ElevatedButton.icon(
-                                    onPressed: () {},
+                                    onPressed: () => _showCouponDialog(context),
                                     icon: Icon(Icons.discount),
                                     label: Text('Kupon'),
                                     style: ElevatedButton.styleFrom(
@@ -963,6 +990,297 @@ class _CashierPageState extends State<CashierPage> {
               child: const Text('Simpan'),
             ),
           ],
+        );
+      },
+    );
+  }
+
+  Future<dynamic> _showCouponDialog(BuildContext context) {
+    return showModalBottomSheet(
+      context: context,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        final theme = Theme.of(ctx);
+        return Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.onSurfaceVariant.withValues(
+                      alpha: 0.3,
+                    ),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Metode Input Kupon',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 12),
+              ListTile(
+                title: Text('Input Scanner/Manual'),
+                leading: Icon(
+                  Icons.barcode_reader,
+                  size: 30,
+                  color: theme.colorScheme.primary,
+                ),
+                subtitle: Text(
+                  'Masukkan kode kupon dengan scanner atau manual',
+                ),
+                trailing: Icon(Icons.arrow_forward),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  final codeController = TextEditingController();
+                  showDialog(
+                    context: context,
+                    builder: (dialogCtx) {
+                      return BlocConsumer<CouponDetailBloc, CouponDetailState>(
+                        listener: (context, state) {
+                          if (state is CouponDetailLoaded) {
+                            context.read<CashierBloc>().add(
+                              CashierApplyCoupon(
+                                couponId: state.coupon.id,
+                                couponCode: state.coupon.code,
+                                discount:
+                                    num.tryParse(state.coupon.value ?? '0') ??
+                                    0,
+                              ),
+                            );
+                            Navigator.pop(dialogCtx);
+                          }
+                          if (state is CouponDetailError) {
+                            Navigator.pop(dialogCtx);
+                            showDialog(
+                              context: context,
+                              builder: (ctx) {
+                                return AlertDialog(
+                                  title: Text('Error'),
+                                  content: Text(
+                                    state.error?.message ??
+                                        'Gagal memuat kupon',
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(ctx),
+                                      child: Text('OK'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          }
+                        },
+                        builder: (context, state) {
+                          return Dialog(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(24),
+                            ),
+                            elevation: 0,
+                            backgroundColor: Colors.transparent,
+                            child: Container(
+                              width: 600,
+                              padding: const EdgeInsets.all(24),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.surface,
+                                borderRadius: BorderRadius.circular(24),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.1),
+                                    blurRadius: 20,
+                                    offset: const Offset(0, 10),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.all(12),
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.primaryContainer,
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Icon(
+                                          Icons.discount_rounded,
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.primary,
+                                          size: 28,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 16),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Input Kode Kupon',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .titleLarge
+                                                  ?.copyWith(
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              'Masukkan kode promo atau diskon Anda di sini.',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium
+                                                  ?.copyWith(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onSurfaceVariant,
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 24),
+                                  TextField(
+                                    autofocus: true,
+                                    textCapitalization:
+                                        TextCapitalization.characters,
+                                    controller: codeController,
+                                    decoration: InputDecoration(
+                                      labelText: 'Kode Kupon',
+                                      hintText: 'Contoh: PROMO2024',
+                                      prefixIcon: const Icon(
+                                        Icons.local_offer_outlined,
+                                      ),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                        borderSide: BorderSide(
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.outlineVariant,
+                                        ),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                        borderSide: BorderSide(
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.primary,
+                                          width: 2,
+                                        ),
+                                      ),
+                                      filled: true,
+                                      fillColor: Theme.of(context)
+                                          .colorScheme
+                                          .surface
+                                          .withValues(alpha: 0.5),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 32),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.pop(dialogCtx),
+                                        style: TextButton.styleFrom(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 24,
+                                            vertical: 14,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                        ),
+                                        child: const Text('Batal'),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      FilledButton(
+                                        onPressed: () {
+                                          context.read<CouponDetailBloc>().add(
+                                            FetchCouponDetail(
+                                              code: codeController.text,
+                                            ),
+                                          );
+                                        },
+                                        style: FilledButton.styleFrom(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 24,
+                                            vertical: 14,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                        ),
+                                        child: const Text(
+                                          'Gunakan',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  );
+                },
+              ),
+              ListTile(
+                title: Text('Scan dengan Kamera'),
+                leading: Icon(
+                  Icons.camera_alt,
+                  size: 30,
+                  color: theme.colorScheme.primary,
+                ),
+                subtitle: Text('Masukkan kode kupon dengan kamera'),
+                trailing: Icon(Icons.arrow_forward),
+                onTap: () {},
+              ),
+              ListTile(
+                title: Text('Pilih Kupon Langsung'),
+                leading: Icon(
+                  Icons.list,
+                  size: 30,
+                  color: theme.colorScheme.primary,
+                ),
+                subtitle: Text('Pilih kupon dari daftar kupon yang tersedia'),
+                trailing: Icon(Icons.arrow_forward),
+                onTap: () {},
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
         );
       },
     );

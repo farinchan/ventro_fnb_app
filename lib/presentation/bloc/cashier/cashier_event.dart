@@ -19,18 +19,30 @@ class CashierLoadSaleMode extends CashierEvent {
   List<Object> get props => [];
 }
 
-class CashierLoadTable extends CashierEvent {
-  const CashierLoadTable();
-
-  @override
-  List<Object> get props => [];
-}
-
 class CashierLoadTax extends CashierEvent {
   const CashierLoadTax();
 
   @override
   List<Object> get props => [];
+}
+
+class CashierLoadCoupon extends CashierEvent {
+  const CashierLoadCoupon();
+
+  @override
+  List<Object> get props => [];
+}
+
+class CashierApplyCoupon extends CashierEvent {
+  final String? couponCode;
+  final int? couponId;
+  final num discount;
+
+  const CashierApplyCoupon({
+    this.couponCode,
+    this.couponId,
+    required this.discount,
+  });
 }
 
 /// Add a product variant to the cart, or increment its quantity if already present.

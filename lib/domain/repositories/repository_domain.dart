@@ -1,4 +1,5 @@
 import 'package:ventro_fnb_app/domain/entities/category_entity.dart';
+import 'package:ventro_fnb_app/domain/entities/coupon_entity.dart';
 import 'package:ventro_fnb_app/domain/entities/error_entity.dart';
 import 'package:ventro_fnb_app/domain/entities/login_entity.dart';
 import 'package:dartz/dartz.dart';
@@ -22,4 +23,7 @@ abstract class RepositoryDomain {
     Future<Either<ErrorEntity, List<SaleModeEntity>>> saleModeList();
     Future<Either<ErrorEntity, List<TableEntity>>> tableList();
     Future<Either<ErrorEntity, List<TaxEntity>>> taxList();
+
+    Future<Either<ErrorEntity, List<CouponEntity>>> couponList();
+    Future<Either<ErrorEntity, CouponEntity>> couponDetail(String code);
 }

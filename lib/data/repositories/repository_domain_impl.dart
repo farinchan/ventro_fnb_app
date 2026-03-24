@@ -4,6 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'package:ventro_fnb_app/data/datasources/remote_datasource.dart';
 import 'package:ventro_fnb_app/data/models/error_model.dart';
 import 'package:ventro_fnb_app/domain/entities/category_entity.dart';
+import 'package:ventro_fnb_app/domain/entities/coupon_entity.dart';
 import 'package:ventro_fnb_app/domain/entities/error_entity.dart';
 import 'package:ventro_fnb_app/domain/entities/login_entity.dart';
 import 'package:ventro_fnb_app/domain/entities/outlet_entity.dart';
@@ -257,6 +258,54 @@ class RepositoryDomainImpl implements RepositoryDomain {
       return Left(e.toEntity());
     } catch (e) {
       log('Tax list error: $e', name: 'RepositoryDomainImpl', error: e);
+      return Left(
+        ErrorEntity(status: "error", message: e.toString(), validation: null),
+      );
+    }
+  }
+
+  @override
+  Future<Either<ErrorEntity, List<CouponEntity>>> couponList() async {
+    try {
+      final result = await remoteDatasource.couponList();
+      log(
+        'Coupon list successful: ${result.map((e) => e.toEntity()).toList()}',
+        name: 'RepositoryDomainImpl',
+      );
+      return Right(result.map((e) => e.toEntity()).toList());
+    } on ErrorModel catch (e) {
+      log(
+        'Coupon list error: ${e.toEntity()}',
+        name: 'RepositoryDomainImpl',
+        error: e,
+      );
+      return Left(e.toEntity());
+    } catch (e) {
+      log('Coupon list error: $e', name: 'RepositoryDomainImpl', error: e);
+      return Left(
+        ErrorEntity(status: "error", message: e.toString(), validation: null),
+      );
+    }
+  }
+
+  @override
+  Future<Either<ErrorEntity, CouponEntity>> couponDetail(String code) async {
+    try {
+      final result = await remoteDatasource.couponDetail(code);
+      log(
+        'Coupon detail successful: ${result.toEntity()}',
+        name: 'RepositoryDomainImpl',
+      );
+      return Right(result.toEntity());
+    } on ErrorModel catch (e) {
+      log(
+        'Coupon detail error: ${e.toEntity()}',
+        name: 'RepositoryDomainImpl',
+        error: e,
+      );
+      return Left(e.toEntity());
+    } catch (e) {
+      log('Coupon detail error: $e', name: 'RepositoryDomainImpl', error: e);
       return Left(
         ErrorEntity(status: "error", message: e.toString(), validation: null),
       );
