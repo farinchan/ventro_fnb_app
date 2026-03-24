@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:sidebarx/sidebarx.dart';
 import 'package:ventro_fnb_app/core/routes/app_router.dart';
 import 'package:ventro_fnb_app/presentation/bloc/profile/profile_bloc.dart';
 

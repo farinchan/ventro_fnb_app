@@ -10,6 +10,8 @@ import 'package:ventro_fnb_app/data/models/login_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:ventro_fnb_app/data/models/outlet_model.dart';
 import 'package:ventro_fnb_app/data/models/product_mode.dart';
+import 'package:ventro_fnb_app/data/models/sale_mode_model.dart';
+import 'package:ventro_fnb_app/data/models/table_model.dart';
 import 'package:ventro_fnb_app/data/models/user_model.dart';
 
 class RemoteDatasourceImpl implements RemoteDatasource {
@@ -237,6 +239,76 @@ class RemoteDatasourceImpl implements RemoteDatasource {
       rethrow;
     } catch (e) {
       log('Product detail error: $e', name: 'RemoteDatasourceImpl', error: e);
+      throw ErrorModel(
+        status: "error",
+        message: e.toString(),
+        validation: null,
+      );
+    }
+  }
+
+  //TODO: UTILITIES - Sale Mode
+  @override
+  Future<List<SaleModeModel>> saleModeList() async {
+    try {
+      var token = await LocalDatasource().getToken();
+      var outletId = await LocalDatasource().getOutletId();
+      final response = await client.get(
+        Uri.parse("${ApiClient.baseUrl}/utilities/sale-mode"),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+          "X-Outlet-ID": "$outletId",
+        },
+      );
+
+      final payload = json.decode(response.body)["data"];
+
+      if (response.statusCode == 200) {
+        return (payload as List).map((e) => SaleModeModel.fromJson(e)).toList();
+      } else {
+        final error = ErrorModel.fromJson(payload);
+        throw error;
+      }
+    } on ErrorModel {
+      rethrow;
+    } catch (e) {
+      log('Sale mode list error: $e', name: 'RemoteDatasourceImpl', error: e);
+      throw ErrorModel(
+        status: "error",
+        message: e.toString(),
+        validation: null,
+      );
+    }
+  }
+
+  //TODO: UTILITIES - Table
+  @override
+  Future<List<TableModel>> tableList() async {
+    try {
+      var token = await LocalDatasource().getToken();
+      var outletId = await LocalDatasource().getOutletId();
+      final response = await client.get(
+        Uri.parse("${ApiClient.baseUrl}/utilities/table"),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+          "X-Outlet-ID": "$outletId",
+        },
+      );
+
+      final payload = json.decode(response.body)["data"];
+
+      if (response.statusCode == 200) {
+        return (payload as List).map((e) => TableModel.fromJson(e)).toList();
+      } else {
+        final error = ErrorModel.fromJson(payload);
+        throw error;
+      }
+    } on ErrorModel {
+      rethrow;
+    } catch (e) {
+      log('Table list error: $e', name: 'RemoteDatasourceImpl', error: e);
       throw ErrorModel(
         status: "error",
         message: e.toString(),

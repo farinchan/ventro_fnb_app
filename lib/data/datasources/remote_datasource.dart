@@ -2,6 +2,8 @@ import 'package:ventro_fnb_app/data/models/category_model.dart';
 import 'package:ventro_fnb_app/data/models/login_model.dart';
 import 'package:ventro_fnb_app/data/models/outlet_model.dart';
 import 'package:ventro_fnb_app/data/models/product_mode.dart';
+import 'package:ventro_fnb_app/data/models/sale_mode_model.dart';
+import 'package:ventro_fnb_app/data/models/table_model.dart';
 import 'package:ventro_fnb_app/data/models/user_model.dart';
 
 abstract class RemoteDatasource {
@@ -13,4 +15,7 @@ abstract class RemoteDatasource {
   Future<List<CategoryModel>> categoryList();
   Future<List<ProductModel>> productList();
   Future<ProductModel> productDetail(int productId);
+
+  Future<List<SaleModeModel>> saleModeList();
+  Future<List<TableModel>> tableList();
 }

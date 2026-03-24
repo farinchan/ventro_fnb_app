@@ -8,6 +8,8 @@ import 'package:ventro_fnb_app/domain/entities/error_entity.dart';
 import 'package:ventro_fnb_app/domain/entities/login_entity.dart';
 import 'package:ventro_fnb_app/domain/entities/outlet_entity.dart';
 import 'package:ventro_fnb_app/domain/entities/product_entity.dart';
+import 'package:ventro_fnb_app/domain/entities/sale_mode_entity.dart';
+import 'package:ventro_fnb_app/domain/entities/table_entity.dart';
 import 'package:ventro_fnb_app/domain/entities/user_entity.dart';
 import 'package:ventro_fnb_app/domain/repositories/repository_domain.dart';
 
@@ -182,6 +184,54 @@ class RepositoryDomainImpl implements RepositoryDomain {
       return Left(e.toEntity());
     } catch (e) {
       log('Product list error: $e', name: 'RepositoryDomainImpl', error: e);
+      return Left(
+        ErrorEntity(status: "error", message: e.toString(), validation: null),
+      );
+    }
+  }
+
+  @override
+  Future<Either<ErrorEntity, List<SaleModeEntity>>> saleModeList() async {
+    try {
+      final result = await remoteDatasource.saleModeList();
+      log(
+        'Sale mode list successful: ${result.map((e) => e.toEntity()).toList()}',
+        name: 'RepositoryDomainImpl',
+      );
+      return Right(result.map((e) => e.toEntity()).toList());
+    } on ErrorModel catch (e) {
+      log(
+        'Sale mode list error: ${e.toEntity()}',
+        name: 'RepositoryDomainImpl',
+        error: e,
+      );
+      return Left(e.toEntity());
+    } catch (e) {
+      log('Sale mode list error: $e', name: 'RepositoryDomainImpl', error: e);
+      return Left(
+        ErrorEntity(status: "error", message: e.toString(), validation: null),
+      );
+    }
+  }
+
+  @override
+  Future<Either<ErrorEntity, List<TableEntity>>> tableList() async {
+    try {
+      final result = await remoteDatasource.tableList();
+      log(
+        'Table list successful: ${result.map((e) => e.toEntity()).toList()}',
+        name: 'RepositoryDomainImpl',
+      );
+      return Right(result.map((e) => e.toEntity()).toList());
+    } on ErrorModel catch (e) {
+      log(
+        'Table list error: ${e.toEntity()}',
+        name: 'RepositoryDomainImpl',
+        error: e,
+      );
+      return Left(e.toEntity());
+    } catch (e) {
+      log('Table list error: $e', name: 'RepositoryDomainImpl', error: e);
       return Left(
         ErrorEntity(status: "error", message: e.toString(), validation: null),
       );

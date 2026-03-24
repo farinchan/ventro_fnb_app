@@ -4,6 +4,8 @@ import 'package:ventro_fnb_app/domain/entities/login_entity.dart';
 import 'package:dartz/dartz.dart';
 import 'package:ventro_fnb_app/domain/entities/outlet_entity.dart';
 import 'package:ventro_fnb_app/domain/entities/product_entity.dart';
+import 'package:ventro_fnb_app/domain/entities/sale_mode_entity.dart';
+import 'package:ventro_fnb_app/domain/entities/table_entity.dart';
 import 'package:ventro_fnb_app/domain/entities/user_entity.dart';
 
 abstract class RepositoryDomain {
@@ -15,4 +17,7 @@ abstract class RepositoryDomain {
     Future<Either<ErrorEntity, List<CategoryEntity>>> categoryList();
     Future<Either<ErrorEntity, List<ProductEntity>>> productList();
     Future<Either<ErrorEntity, ProductEntity>> productDetail(int productId);
+
+    Future<Either<ErrorEntity, List<SaleModeEntity>>> saleModeList();
+    Future<Either<ErrorEntity, List<TableEntity>>> tableList();
 }

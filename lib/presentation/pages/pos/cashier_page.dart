@@ -38,7 +38,7 @@ class _CashierPageState extends State<CashierPage> {
     );
   }
 
-  String _currency(int value) {
+  String _currency(num value) {
     final formatter = NumberFormat.currency(
       locale: 'id_ID',
       symbol: 'Rp ',
@@ -483,7 +483,9 @@ class _CashierPageState extends State<CashierPage> {
                               child: ElevatedButton.icon(
                                 onPressed: () {},
                                 icon: Icon(Icons.payment),
-                                label: Text('Bayar | Rp.'),
+                                label: Text(
+                                  'Bayar | ' + _currency(state.subtotal),
+                                ),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.red,
                                 ),
@@ -538,14 +540,6 @@ class _CashierPageState extends State<CashierPage> {
           if (variants.length == 1) {
             context.read<CashierBloc>().add(
               CashierAddToCart(product: product, variant: variants.first),
-            );
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('${product.name} ditambahkan ke keranjang'),
-                duration: const Duration(milliseconds: 800),
-                behavior: SnackBarBehavior.floating,
-                margin: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
-              ),
             );
             return;
           }

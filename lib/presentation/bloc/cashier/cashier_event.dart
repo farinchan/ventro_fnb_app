@@ -68,7 +68,10 @@ class CashierUpdateCartItemNote extends CashierEvent {
   final String cartItemId;
   final String note;
 
-  const CashierUpdateCartItemNote({required this.cartItemId, required this.note});
+  const CashierUpdateCartItemNote({
+    required this.cartItemId,
+    required this.note,
+  });
 
   @override
   List<Object> get props => [cartItemId, note];

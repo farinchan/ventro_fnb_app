@@ -24,19 +24,24 @@ class CashierState extends Equatable {
     var filtered = products;
 
     if (selectedCategory != null) {
-      filtered = filtered.where((p) => p.category?.id == selectedCategory!.id).toList();
+      filtered = filtered
+          .where((p) => p.category?.id == selectedCategory!.id)
+          .toList();
     }
 
     if (searchQuery.isNotEmpty) {
       final q = searchQuery.toLowerCase();
-      filtered = filtered.where((p) => (p.name ?? '').toLowerCase().contains(q)).toList();
+      filtered = filtered
+          .where((p) => (p.name ?? '').toLowerCase().contains(q))
+          .toList();
     }
 
     return filtered;
   }
 
   /// Subtotal price of all items in the cart.
-  int get subtotal => cartItems.fold(0, (sum, item) => sum + (item.qty * item.price));
+  num get subtotal =>
+      cartItems.fold(0, (sum, item) => sum + (item.qty * item.price));
 
   CashierState copyWith({
     CashierStatus? status,
@@ -52,13 +57,22 @@ class CashierState extends Equatable {
       products: products ?? this.products,
       cartItems: cartItems ?? this.cartItems,
       searchQuery: searchQuery ?? this.searchQuery,
-      selectedCategory: clearCategory ? null : (selectedCategory ?? this.selectedCategory),
+      selectedCategory: clearCategory
+          ? null
+          : (selectedCategory ?? this.selectedCategory),
       error: error ?? this.error,
     );
   }
 
   @override
-  List<Object?> get props => [status, products, cartItems, searchQuery, selectedCategory, error];
+  List<Object?> get props => [
+    status,
+    products,
+    cartItems,
+    searchQuery,
+    selectedCategory,
+    error,
+  ];
 }
 
 class CartItem extends Equatable {
@@ -69,8 +83,8 @@ class CartItem extends Equatable {
   final String? productImage;
   final int variantId;
   final String variantName;
-  final int qty;
-  final int price;
+  final num qty;
+  final num price;
   final String? notes;
 
   const CartItem({
@@ -85,7 +99,7 @@ class CartItem extends Equatable {
     this.notes,
   });
 
-  CartItem copyWith({int? qty, String? notes}) {
+  CartItem copyWith({num? qty, String? notes}) {
     return CartItem(
       id: id,
       productId: productId,
@@ -100,5 +114,15 @@ class CartItem extends Equatable {
   }
 
   @override
-  List<Object?> get props => [id, productId, productName, productImage, variantId, variantName, qty, price, notes];
+  List<Object?> get props => [
+    id,
+    productId,
+    productName,
+    productImage,
+    variantId,
+    variantName,
+    qty,
+    price,
+    notes,
+  ];
 }
