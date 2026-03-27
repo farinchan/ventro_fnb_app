@@ -4,6 +4,10 @@ enum CashierStatus { initial, loading, loaded, error }
 
 class CashierState extends Equatable {
   final CashierStatus status;
+  final String? CustomerName;
+  final String? customerPhone;
+  final String? tableId;
+  final String? tableName;
   final List<ProductEntity> products;
   final List<SaleModeEntity> saleModeList;
   final List<CouponEntity> couponList;
@@ -18,6 +22,10 @@ class CashierState extends Equatable {
 
   const CashierState({
     this.status = CashierStatus.initial,
+    this.CustomerName,
+    this.customerPhone,
+    this.tableId,
+    this.tableName,
     this.products = const [],
     this.saleModeList = const [],
     this.couponList = const [],
@@ -62,16 +70,21 @@ class CashierState extends Equatable {
 
   List<TaxEntity> get addTaxValue => taxList.map((tax) {
     return tax.copyWith(
-      value: (num.tryParse(tax.percent ?? '0') ?? 0) * subtotalWithDiscount / 100,
+      value:
+          (num.tryParse(tax.percent ?? '0') ?? 0) * subtotalWithDiscount / 100,
     );
   }).toList();
 
-
   num get total =>
-      subtotalWithDiscount + addTaxValue.fold(0, (sum, tax) => sum + (tax.value ?? 0));
+      subtotalWithDiscount +
+      addTaxValue.fold(0, (sum, tax) => sum + (tax.value ?? 0));
 
   CashierState copyWith({
     CashierStatus? status,
+    String? CustomerName,
+    String? customerPhone,
+    String? tableId,
+    String? tableName,
     List<ProductEntity>? products,
     List<SaleModeEntity>? saleModeList,
     List<CouponEntity>? couponList,
@@ -87,6 +100,10 @@ class CashierState extends Equatable {
   }) {
     return CashierState(
       status: status ?? this.status,
+      CustomerName: CustomerName ?? this.CustomerName,
+      customerPhone: customerPhone ?? this.customerPhone,
+      tableId: tableId ?? this.tableId,
+      tableName: tableName ?? this.tableName,
       products: products ?? this.products,
       saleModeList: saleModeList ?? this.saleModeList,
       couponList: couponList ?? this.couponList,
@@ -106,9 +123,13 @@ class CashierState extends Equatable {
   @override
   List<Object?> get props => [
     status,
+    CustomerName,
+    customerPhone,
+    tableId,
+    tableName,
     products,
     saleModeList,
-    couponList, 
+    couponList,
     taxList,
     cartItems,
     couponCode,

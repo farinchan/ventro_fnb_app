@@ -37,7 +37,7 @@ class _SelectOutletPageState extends State<SelectOutletPage> {
     try {
       await LocalDatasource().saveOutletId(selectedOutlet.id!);
       if (!mounted) return;
-      context.go(AppRouter.cashierPath);
+      context.go('/cashier');
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

@@ -1,12 +1,13 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:ventro_fnb_app/domain/entities/product_entity.dart';
 import 'package:ventro_fnb_app/presentation/bloc/cashier/cashier_bloc.dart';
 import 'package:ventro_fnb_app/presentation/bloc/category/category_bloc.dart';
 import 'package:ventro_fnb_app/presentation/bloc/coupon_detail/coupon_detail_bloc.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:ventro_fnb_app/presentation/pages/pos/process_page.dart';
 
 class CashierPage extends StatefulWidget {
   static const String routeName = 'cashier';
@@ -593,7 +594,14 @@ class _CashierPageState extends State<CashierPage> {
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton.icon(
-                                onPressed: () {},
+                                onPressed: state.cartItems.isEmpty
+                                    ? null
+                                    : () {
+                                        context.goNamed(
+                                          ProcessPage.routeName,
+                                          extra: state,
+                                        );
+                                      },
                                 icon: Icon(Icons.payment),
                                 label: Text(
                                   'Proses | ' + _currency(state.total),
@@ -1159,43 +1167,127 @@ class _CashierPageState extends State<CashierPage> {
                                     ],
                                   ),
                                   const SizedBox(height: 24),
-                                  TextField(
-                                    autofocus: true,
-                                    textCapitalization:
-                                        TextCapitalization.characters,
-                                    controller: codeController,
-                                    decoration: InputDecoration(
-                                      labelText: 'Kode Kupon',
-                                      hintText: 'Contoh: PROMO2024',
-                                      prefixIcon: const Icon(
-                                        Icons.local_offer_outlined,
-                                      ),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(16),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(16),
-                                        borderSide: BorderSide(
-                                          color: Theme.of(
-                                            context,
-                                          ).colorScheme.outlineVariant,
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: TextField(
+                                          autofocus: true,
+                                          textCapitalization:
+                                              TextCapitalization.characters,
+                                          controller: codeController,
+                                          decoration: InputDecoration(
+                                            labelText: 'Kode Kupon',
+                                            hintText: 'Contoh: PROMO2024',
+                                            prefixIcon: const Icon(
+                                              Icons.local_offer_outlined,
+                                            ),
+                                            border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
+                                              borderSide: BorderSide(
+                                                color: Theme.of(
+                                                  context,
+                                                ).colorScheme.outlineVariant,
+                                              ),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
+                                              borderSide: BorderSide(
+                                                color: Theme.of(
+                                                  context,
+                                                ).colorScheme.primary,
+                                                width: 2,
+                                              ),
+                                            ),
+                                            filled: true,
+                                            fillColor: Theme.of(context)
+                                                .colorScheme
+                                                .surface
+                                                .withValues(alpha: 0.5),
+                                          ),
                                         ),
                                       ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(16),
-                                        borderSide: BorderSide(
-                                          color: Theme.of(
-                                            context,
-                                          ).colorScheme.primary,
-                                          width: 2,
+                                      const SizedBox(width: 16),
+                                      IconButton(
+                                        onPressed: () async {
+                                          final result = await showDialog<String>(
+                                            context: context,
+                                            builder: (ctx) {
+                                              bool isScanned = false;
+                                              return Dialog(
+                                                backgroundColor:
+                                                    Colors.transparent,
+                                                elevation: 0,
+                                                child: Stack(
+                                                  alignment: Alignment.center,
+                                                  children: [
+                                                    SizedBox(
+                                                      width: 400,
+                                                      height: 400,
+                                                      child: ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              24,
+                                                            ),
+                                                        child: MobileScanner(
+                                                          onDetect: (capture) {
+                                                            if (isScanned)
+                                                              return;
+                                                            final List<Barcode>
+                                                            barcodes = capture
+                                                                .barcodes;
+                                                            for (final barcode
+                                                                in barcodes) {
+                                                              if (barcode
+                                                                      .rawValue !=
+                                                                  null) {
+                                                                isScanned =
+                                                                    true;
+                                                                Navigator.pop(
+                                                                  ctx,
+                                                                  barcode
+                                                                      .rawValue,
+                                                                );
+                                                                break;
+                                                              }
+                                                            }
+                                                          },
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Positioned(
+                                                      top: 20,
+                                                      right: 20,
+                                                      child: IconButton(
+                                                        onPressed: () =>
+                                                            Navigator.pop(ctx),
+                                                        icon: const Icon(
+                                                          Icons.close,
+                                                          color: Colors.white,
+                                                          size: 30,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+                                            },
+                                          );
+                                          if (result != null) {
+                                            codeController.text = result;
+                                          }
+                                        },
+                                        icon: Icon(
+                                          Icons.camera_alt,
+                                          color: Theme.of(context).primaryColor,
                                         ),
                                       ),
-                                      filled: true,
-                                      fillColor: Theme.of(context)
-                                          .colorScheme
-                                          .surface
-                                          .withValues(alpha: 0.5),
-                                    ),
+                                    ],
                                   ),
                                   const SizedBox(height: 32),
                                   Row(
@@ -1255,17 +1347,6 @@ class _CashierPageState extends State<CashierPage> {
                     },
                   );
                 },
-              ),
-              ListTile(
-                title: Text('Scan dengan Kamera'),
-                leading: Icon(
-                  Icons.camera_alt,
-                  size: 30,
-                  color: theme.colorScheme.primary,
-                ),
-                subtitle: Text('Masukkan kode kupon dengan kamera'),
-                trailing: Icon(Icons.arrow_forward),
-                onTap: () {},
               ),
               ListTile(
                 title: Text('Pilih Kupon Langsung'),

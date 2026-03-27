@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:ventro_fnb_app/core/routes/app_router.dart';
 import 'package:ventro_fnb_app/presentation/bloc/profile/profile_bloc.dart';
+import 'package:ventro_fnb_app/presentation/pages/pos/cashier_page.dart';
 
 class MainPage extends StatefulWidget {
   final Widget child;
@@ -178,7 +179,7 @@ class _MainPageState extends State<MainPage> {
                             setState(() {
                               _selectedIndex = 0;
                             });
-                            context.go(AppRouter.cashierPath);
+                            context.goNamed(CashierPage.routeName);
                           },
                           leading: Icon(Icons.point_of_sale),
                           trailing: Icon(Icons.arrow_forward_ios, size: 12),
@@ -193,7 +194,7 @@ class _MainPageState extends State<MainPage> {
                             setState(() {
                               _selectedIndex = 1;
                             });
-                            context.go(AppRouter.searchPath);
+                            context.goNamed('search');
                           },
                         ),
                         ListTile(
@@ -206,7 +207,7 @@ class _MainPageState extends State<MainPage> {
                             setState(() {
                               _selectedIndex = 2;
                             });
-                            context.go(AppRouter.peoplePath);
+                            context.goNamed('people');
                           },
                         ),
                       ],
