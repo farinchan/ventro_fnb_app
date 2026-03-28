@@ -38,11 +38,13 @@ class CashierApplyCoupon extends CashierEvent {
   final int? couponId;
   final num discount;
 
-  const CashierApplyCoupon({
-    this.couponCode,
-    this.couponId,
-    required this.discount,
-  });
+  const CashierApplyCoupon({this.couponCode, this.couponId, required this.discount});
+}
+
+class CashierChangeSaleMode extends CashierEvent {
+  final int? saleModeId;
+
+  const CashierChangeSaleMode(this.saleModeId);
 }
 
 /// Add a product variant to the cart, or increment its quantity if already present.
@@ -101,10 +103,7 @@ class CashierUpdateCartItemNote extends CashierEvent {
   final String cartItemId;
   final String note;
 
-  const CashierUpdateCartItemNote({
-    required this.cartItemId,
-    required this.note,
-  });
+  const CashierUpdateCartItemNote({required this.cartItemId, required this.note});
 
   @override
   List<Object> get props => [cartItemId, note];

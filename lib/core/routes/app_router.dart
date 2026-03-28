@@ -6,6 +6,7 @@ import 'package:ventro_fnb_app/domain/entities/coupon_entity.dart';
 import 'package:ventro_fnb_app/domain/entities/product_entity.dart';
 import 'package:ventro_fnb_app/domain/entities/sale_mode_entity.dart';
 import 'package:ventro_fnb_app/domain/entities/tax_entity.dart';
+import 'package:ventro_fnb_app/domain/entities/user_entity.dart';
 import 'package:ventro_fnb_app/presentation/bloc/cashier/cashier_bloc.dart';
 import 'package:ventro_fnb_app/presentation/pages/auth/login_page.dart';
 import 'package:ventro_fnb_app/presentation/pages/auth/select_outlet_page.dart';
@@ -24,6 +25,7 @@ class AppRouter {
     redirect: ((context, state) async {
       final token = await LocalDatasource().getToken();
       final outletId = await LocalDatasource().getOutletId();
+      final staffOutletId = await LocalDatasource().getStaffOutletId();
 
       final isLoggingIn = state.matchedLocation == '/login';
       final isSelectingOutlet = state.matchedLocation == '/select-outlet';
@@ -32,8 +34,8 @@ class AppRouter {
         return isLoggingIn ? null : '/login';
       }
 
-      if (outletId == null) {
-        return isSelectingOutlet ? null : '/select-outlet';
+      if (outletId == null) { 
+        return isSelectingOutlet ? null : '/login';
       }
 
       if (isLoggingIn || isSelectingOutlet) {
@@ -43,15 +45,14 @@ class AppRouter {
       return null;
     }),
     routes: [
-      GoRoute(
-        path: '/login',
-        name: LoginPage.routeName,
-        builder: (context, state) => const LoginPage(),
-      ),
+      GoRoute(path: '/login', name: LoginPage.routeName, builder: (context, state) => const LoginPage()),
       GoRoute(
         path: '/select-outlet',
         name: SelectOutletPage.routeName,
-        builder: (context, state) => const SelectOutletPage(),
+        builder: (context, state) {
+          final user = state.extra as UserEntity;
+          return SelectOutletPage(user: user);
+        },
       ),
 
       ShellRoute(
@@ -76,20 +77,17 @@ class AppRouter {
           GoRoute(
             path: '/search',
             name: 'search',
-            builder: (context, state) =>
-                const PlaceholderContentPage(title: 'Search Page'),
+            builder: (context, state) => const PlaceholderContentPage(title: 'Search Page'),
           ),
           GoRoute(
             path: '/people',
             name: 'people',
-            builder: (context, state) =>
-                const PlaceholderContentPage(title: 'People Page'),
+            builder: (context, state) => const PlaceholderContentPage(title: 'People Page'),
           ),
           GoRoute(
             path: '/flutter',
             name: 'flutter',
-            builder: (context, state) =>
-                const PlaceholderContentPage(title: 'Flutter Page'),
+            builder: (context, state) => const PlaceholderContentPage(title: 'Flutter Page'),
           ),
         ],
       ),

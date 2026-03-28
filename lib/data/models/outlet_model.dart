@@ -145,6 +145,7 @@ class Staff extends Equatable {
     final String? username;
     final String? email;
     final String? phone;
+    final int? outletStaffId;
 
     Staff({
         this.id,
@@ -153,6 +154,7 @@ class Staff extends Equatable {
         this.username,
         this.email,
         this.phone,
+        this.outletStaffId,
     });
 
     factory Staff.fromJson(Map<String, dynamic> json) => Staff(
@@ -162,6 +164,7 @@ class Staff extends Equatable {
         username: json["username"],
         email: json["email"],
         phone: json["phone"],
+        outletStaffId: json["outlet_staff_id"],
     );
 
     StaffEntity toEntity() => StaffEntity(
@@ -171,8 +174,9 @@ class Staff extends Equatable {
         username: username,
         email: email,
         phone: phone,
+        outletStaffId: outletStaffId,
     );
 
     @override
-    List<Object?> get props => [id, photo, name, username, email, phone];
+    List<Object?> get props => [id, photo, name, username, email, phone, outletStaffId];
   }

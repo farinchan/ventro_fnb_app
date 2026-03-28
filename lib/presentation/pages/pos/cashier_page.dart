@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -35,17 +37,11 @@ class _CashierPageState extends State<CashierPage> {
   }
 
   void _onSearchChanged() {
-    context.read<CashierBloc>().add(
-      CashierSearchProducts(query: _searchController.text),
-    );
+    context.read<CashierBloc>().add(CashierSearchProducts(query: _searchController.text));
   }
 
   String _currency(num value) {
-    final formatter = NumberFormat.currency(
-      locale: 'id_ID',
-      symbol: 'Rp ',
-      decimalDigits: 0,
-    );
+    final formatter = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
     return formatter.format(value);
   }
 
@@ -59,12 +55,12 @@ class _CashierPageState extends State<CashierPage> {
         child: BlocConsumer<CashierBloc, CashierState>(
           listener: (context, state) {
             if (state.error != null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.error?.message ?? 'Error'),
-                  backgroundColor: Colors.red,
-                ),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(state.error?.message ?? 'Error'), backgroundColor: Colors.red));
+            }
+            if (state.saleModeList.isNotEmpty) {
+              context.read<CashierBloc>().add(CashierChangeSaleMode(state.saleModeList.first.id));
             }
           },
           builder: (context, state) {
@@ -87,21 +83,16 @@ class _CashierPageState extends State<CashierPage> {
                                 hintText: 'Cari produk...',
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(
-                                    color: theme.colorScheme.primary,
-                                  ),
+                                  borderSide: BorderSide(color: theme.colorScheme.primary),
                                 ),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(
-                                    color: theme.colorScheme.primary,
-                                  ),
+                                  borderSide: BorderSide(color: theme.colorScheme.primary),
                                 ),
                                 suffixIcon: _searchController.text.isNotEmpty
                                     ? IconButton(
                                         icon: const Icon(Icons.clear, size: 18),
-                                        onPressed: () =>
-                                            _searchController.clear(),
+                                        onPressed: () => _searchController.clear(),
                                       )
                                     : const Icon(Icons.search, size: 20),
                               ),
@@ -111,70 +102,47 @@ class _CashierPageState extends State<CashierPage> {
                               builder: (context, categoryState) {
                                 if (categoryState is CategoryLoading) {
                                   return const Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      vertical: 8.0,
-                                    ),
-                                    child: Center(
-                                      child: CircularProgressIndicator(),
-                                    ),
+                                    padding: EdgeInsets.symmetric(vertical: 8.0),
+                                    child: Center(child: CircularProgressIndicator()),
                                   );
                                 } else if (categoryState is CategoryLoaded) {
                                   return SizedBox(
                                     height: 50,
                                     child: ListView.separated(
                                       scrollDirection: Axis.horizontal,
-                                      itemCount:
-                                          categoryState.categories.length + 1,
-                                      separatorBuilder: (context, index) =>
-                                          const SizedBox(width: 8),
+                                      itemCount: categoryState.categories.length + 1,
+                                      separatorBuilder: (context, index) => const SizedBox(width: 8),
                                       itemBuilder: (context, index) {
                                         final isAll = index == 0;
-                                        final category = isAll
-                                            ? null
-                                            : categoryState.categories[index -
-                                                  1];
+                                        final category = isAll ? null : categoryState.categories[index - 1];
                                         final isSelected = isAll
                                             ? state.selectedCategory == null
-                                            : state.selectedCategory?.id ==
-                                                  category?.id;
+                                            : state.selectedCategory?.id == category?.id;
 
                                         return ChoiceChip(
                                           label: Text(
-                                            isAll
-                                                ? 'Semua Kategori'
-                                                : (category?.name ?? ''),
+                                            isAll ? 'Semua Kategori' : (category?.name ?? ''),
                                             style: TextStyle(
                                               color: isSelected
                                                   ? theme.colorScheme.onPrimary
                                                   : theme.colorScheme.onSurface,
-                                              fontWeight: isSelected
-                                                  ? FontWeight.w600
-                                                  : FontWeight.w400,
+                                              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                                             ),
                                           ),
                                           selected: isSelected,
                                           showCheckmark: false,
-                                          selectedColor:
-                                              theme.colorScheme.primary,
-                                          backgroundColor:
-                                              theme.colorScheme.surface,
+                                          selectedColor: theme.colorScheme.primary,
+                                          backgroundColor: theme.colorScheme.surface,
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              12,
-                                            ),
+                                            borderRadius: BorderRadius.circular(12),
                                             side: BorderSide(
                                               color: isSelected
                                                   ? Colors.transparent
-                                                  : theme
-                                                        .colorScheme
-                                                        .outlineVariant
-                                                        .withValues(alpha: 0.5),
+                                                  : theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
                                             ),
                                           ),
                                           onSelected: (selected) {
-                                            context.read<CashierBloc>().add(
-                                              CashierSelectCategory(category),
-                                            );
+                                            context.read<CashierBloc>().add(CashierSelectCategory(category));
                                           },
                                         );
                                       },
@@ -199,9 +167,7 @@ class _CashierPageState extends State<CashierPage> {
                               switch (state.status) {
                                 case CashierStatus.initial:
                                 case CashierStatus.loading:
-                                  return const Center(
-                                    child: CircularProgressIndicator(),
-                                  );
+                                  return const Center(child: CircularProgressIndicator());
 
                                 case CashierStatus.error:
                                   return Center(
@@ -210,28 +176,17 @@ class _CashierPageState extends State<CashierPage> {
                                       child: Column(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          Icon(
-                                            Icons.error_outline,
-                                            size: 48,
-                                            color: theme.colorScheme.error,
-                                          ),
+                                          Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
                                           const SizedBox(height: 12),
                                           Text(
-                                            state.error?.message ??
-                                                'Terjadi kesalahan',
+                                            state.error?.message ?? 'Terjadi kesalahan',
                                             textAlign: TextAlign.center,
-                                            style: theme.textTheme.bodyMedium
-                                                ?.copyWith(
-                                                  color:
-                                                      theme.colorScheme.error,
-                                                ),
+                                            style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.error),
                                           ),
                                           const SizedBox(height: 16),
                                           FilledButton.tonalIcon(
                                             onPressed: () =>
-                                                context.read<CashierBloc>().add(
-                                                  const CashierLoadProducts(),
-                                                ),
+                                                context.read<CashierBloc>().add(const CashierLoadProducts()),
                                             icon: const Icon(Icons.refresh),
                                             label: const Text('Coba Lagi'),
                                           ),
@@ -251,20 +206,14 @@ class _CashierPageState extends State<CashierPage> {
                                           Icon(
                                             Icons.search_off,
                                             size: 48,
-                                            color: theme
-                                                .colorScheme
-                                                .onSurfaceVariant
-                                                .withValues(alpha: 0.5),
+                                            color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                                           ),
                                           const SizedBox(height: 8),
                                           Text(
                                             'Produk tidak ditemukan',
-                                            style: theme.textTheme.bodyMedium
-                                                ?.copyWith(
-                                                  color: theme
-                                                      .colorScheme
-                                                      .onSurfaceVariant,
-                                                ),
+                                            style: theme.textTheme.bodyMedium?.copyWith(
+                                              color: theme.colorScheme.onSurfaceVariant,
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -272,23 +221,16 @@ class _CashierPageState extends State<CashierPage> {
                                   }
 
                                   return GridView.builder(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 8,
+                                    padding: const EdgeInsets.symmetric(vertical: 8),
+                                    gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                                      maxCrossAxisExtent: 200,
+                                      childAspectRatio: 0.7,
+                                      crossAxisSpacing: 12,
+                                      mainAxisSpacing: 12,
                                     ),
-                                    gridDelegate:
-                                        const SliverGridDelegateWithMaxCrossAxisExtent(
-                                          maxCrossAxisExtent: 200,
-                                          childAspectRatio: 0.7,
-                                          crossAxisSpacing: 12,
-                                          mainAxisSpacing: 12,
-                                        ),
                                     itemCount: products.length,
                                     itemBuilder: (context, index) {
-                                      return _buildProductCard(
-                                        context,
-                                        products[index],
-                                        theme,
-                                      );
+                                      return _buildProductCard(context, products[index], theme);
                                     },
                                   );
                               }
@@ -314,53 +256,31 @@ class _CashierPageState extends State<CashierPage> {
                             children: [
                               //TODO: Cart Header
                               Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 12,
-                                ),
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                                 child: Row(
                                   children: [
-                                    Icon(
-                                      Icons.shopping_bag_outlined,
-                                      color: theme.colorScheme.primary,
-                                      size: 22,
-                                    ),
+                                    Icon(Icons.shopping_bag_outlined, color: theme.colorScheme.primary, size: 22),
                                     const SizedBox(width: 8),
                                     Text(
                                       'Keranjang',
-                                      style: theme.textTheme.titleMedium
-                                          ?.copyWith(
-                                            fontWeight: FontWeight.w700,
-                                          ),
+                                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
                                     ),
                                     const Spacer(),
                                     AnimatedSwitcher(
-                                      duration: const Duration(
-                                        milliseconds: 250,
-                                      ),
+                                      duration: const Duration(milliseconds: 250),
                                       child: Container(
                                         key: ValueKey(state.cartItems.length),
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 10,
-                                          vertical: 4,
-                                        ),
+                                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                         decoration: BoxDecoration(
-                                          color: theme
-                                              .colorScheme
-                                              .primaryContainer,
-                                          borderRadius: BorderRadius.circular(
-                                            20,
-                                          ),
+                                          color: theme.colorScheme.primaryContainer,
+                                          borderRadius: BorderRadius.circular(20),
                                         ),
                                         child: Text(
                                           '${state.cartItems.length} item',
-                                          style: theme.textTheme.labelSmall
-                                              ?.copyWith(
-                                                color: theme
-                                                    .colorScheme
-                                                    .onPrimaryContainer,
-                                                fontWeight: FontWeight.w600,
-                                              ),
+                                          style: theme.textTheme.labelSmall?.copyWith(
+                                            color: theme.colorScheme.onPrimaryContainer,
+                                            fontWeight: FontWeight.w600,
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -371,10 +291,7 @@ class _CashierPageState extends State<CashierPage> {
                                       maintainAnimation: true,
                                       maintainState: true,
                                       child: IconButton(
-                                        visualDensity: VisualDensity(
-                                          vertical:
-                                              VisualDensity.minimumDensity,
-                                        ),
+                                        visualDensity: VisualDensity(vertical: VisualDensity.minimumDensity),
                                         padding: EdgeInsets.zero,
                                         constraints: BoxConstraints(),
                                         icon: Icon(
@@ -383,9 +300,7 @@ class _CashierPageState extends State<CashierPage> {
                                           color: theme.colorScheme.error,
                                         ),
                                         tooltip: 'Kosongkan keranjang',
-                                        onPressed: () => context
-                                            .read<CashierBloc>()
-                                            .add(const CashierClearCart()),
+                                        onPressed: () => context.read<CashierBloc>().add(const CashierClearCart()),
                                       ),
                                     ),
                                   ],
@@ -393,36 +308,30 @@ class _CashierPageState extends State<CashierPage> {
                               ),
                               const SizedBox(height: 8),
                               Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                ),
+                                padding: const EdgeInsets.symmetric(horizontal: 8),
                                 child: DropdownButtonFormField(
                                   decoration: InputDecoration(
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(12),
-                                      borderSide: BorderSide(
-                                        color: theme.colorScheme.primary,
-                                      ),
+                                      borderSide: BorderSide(color: theme.colorScheme.primary),
                                     ),
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(12),
-                                      borderSide: BorderSide(
-                                        color: theme.colorScheme.primary,
-                                      ),
+                                      borderSide: BorderSide(color: theme.colorScheme.primary),
                                     ),
                                   ),
                                   items: state.saleModeList
                                       .map(
-                                        (saleMode) => DropdownMenuItem(
-                                          value: saleMode,
-                                          child: Text(saleMode.name ?? ''),
-                                        ),
+                                        (saleMode) =>
+                                            DropdownMenuItem(value: saleMode, child: Text(saleMode.name ?? '')),
                                       )
                                       .toList(),
-                                  initialValue: state.saleModeList.isNotEmpty
-                                      ? state.saleModeList.first
-                                      : null,
-                                  onChanged: (value) {},
+                                  initialValue: state.saleModeList.isNotEmpty ? state.saleModeList.first : null,
+                                  onChanged: (value) {
+                                    if (value != null) {
+                                      context.read<CashierBloc>().add(CashierChangeSaleMode(value.id));
+                                    }
+                                  },
                                 ),
                               ),
                               const SizedBox(height: 8),
@@ -437,20 +346,14 @@ class _CashierPageState extends State<CashierPage> {
                                             Icon(
                                               Icons.shopping_cart_outlined,
                                               size: 48,
-                                              color: theme
-                                                  .colorScheme
-                                                  .onSurfaceVariant
-                                                  .withValues(alpha: 0.35),
+                                              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.35),
                                             ),
                                             const SizedBox(height: 8),
                                             Text(
                                               'Keranjang masih kosong',
-                                              style: theme.textTheme.bodyMedium
-                                                  ?.copyWith(
-                                                    color: theme
-                                                        .colorScheme
-                                                        .onSurfaceVariant,
-                                                  ),
+                                              style: theme.textTheme.bodyMedium?.copyWith(
+                                                color: theme.colorScheme.onSurfaceVariant,
+                                              ),
                                             ),
                                           ],
                                         ),
@@ -458,15 +361,10 @@ class _CashierPageState extends State<CashierPage> {
                                     : ListView.separated(
                                         padding: const EdgeInsets.all(12),
                                         itemCount: state.cartItems.length,
-                                        separatorBuilder: (_, _) =>
-                                            const SizedBox(height: 8),
+                                        separatorBuilder: (_, _) => const SizedBox(height: 8),
                                         itemBuilder: (context, index) {
                                           final item = state.cartItems[index];
-                                          return _buildCartItemCard(
-                                            context,
-                                            item,
-                                            theme,
-                                          );
+                                          return _buildCartItemCard(context, item, theme);
                                         },
                                       ),
                               ),
@@ -485,12 +383,7 @@ class _CashierPageState extends State<CashierPage> {
                           children: [
                             Row(
                               children: [
-                                Expanded(
-                                  child: Text(
-                                    "Subtotal",
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                ),
+                                Expanded(child: Text("Subtotal", style: TextStyle(fontSize: 16))),
                                 Text(
                                   _currency(state.subtotal),
                                   style: TextStyle(
@@ -505,10 +398,7 @@ class _CashierPageState extends State<CashierPage> {
                               Row(
                                 children: [
                                   Expanded(
-                                    child: Text(
-                                      "Kupon - ${state.couponCode ?? ''}",
-                                      style: TextStyle(fontSize: 16),
-                                    ),
+                                    child: Text("Kupon - ${state.couponCode ?? ''}", style: TextStyle(fontSize: 16)),
                                   ),
                                   Text(
                                     _currency(-(state.discount ?? 0)),
@@ -524,10 +414,7 @@ class _CashierPageState extends State<CashierPage> {
                               return Row(
                                 children: [
                                   Expanded(
-                                    child: Text(
-                                      '${tax.name} (${tax.percent}%)',
-                                      style: TextStyle(fontSize: 16),
-                                    ),
+                                    child: Text('${tax.name} (${tax.percent}%)', style: TextStyle(fontSize: 16)),
                                   ),
                                   Text(
                                     _currency(tax.value ?? 0),
@@ -550,17 +437,10 @@ class _CashierPageState extends State<CashierPage> {
                                     label: Text('Kupon'),
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.white,
-                                      foregroundColor: Theme.of(
-                                        context,
-                                      ).colorScheme.primary,
+                                      foregroundColor: Theme.of(context).colorScheme.primary,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(12),
-                                        side: BorderSide(
-                                          color: Theme.of(
-                                            context,
-                                          ).colorScheme.primary,
-                                          width: 1,
-                                        ),
+                                        side: BorderSide(color: Theme.of(context).colorScheme.primary, width: 1),
                                       ),
                                     ),
                                   ),
@@ -573,17 +453,10 @@ class _CashierPageState extends State<CashierPage> {
                                     label: Text('Cetak'),
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.white,
-                                      foregroundColor: Theme.of(
-                                        context,
-                                      ).colorScheme.primary,
+                                      foregroundColor: Theme.of(context).colorScheme.primary,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(12),
-                                        side: BorderSide(
-                                          color: Theme.of(
-                                            context,
-                                          ).colorScheme.primary,
-                                          width: 1,
-                                        ),
+                                        side: BorderSide(color: Theme.of(context).colorScheme.primary, width: 1),
                                       ),
                                     ),
                                   ),
@@ -597,18 +470,11 @@ class _CashierPageState extends State<CashierPage> {
                                 onPressed: state.cartItems.isEmpty
                                     ? null
                                     : () {
-                                        context.goNamed(
-                                          ProcessPage.routeName,
-                                          extra: state,
-                                        );
+                                        context.goNamed(ProcessPage.routeName, extra: state);
                                       },
                                 icon: Icon(Icons.payment),
-                                label: Text(
-                                  'Proses | ' + _currency(state.total),
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.red,
-                                ),
+                                label: Text('Proses | ' + _currency(state.total)),
+                                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                               ),
                             ),
                           ],
@@ -625,11 +491,7 @@ class _CashierPageState extends State<CashierPage> {
     );
   }
 
-  Widget _buildProductCard(
-    BuildContext context,
-    ProductEntity product,
-    ThemeData theme,
-  ) {
+  Widget _buildProductCard(BuildContext context, ProductEntity product, ThemeData theme) {
     final firstPrice = (product.variants?.isNotEmpty ?? false)
         ? double.tryParse(product.variants!.first.price ?? '0')?.toInt() ?? 0
         : 0;
@@ -647,9 +509,7 @@ class _CashierPageState extends State<CashierPage> {
       shadowColor: theme.colorScheme.shadow.withValues(alpha: 0.08),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(
-          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.2),
-        ),
+        side: BorderSide(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.2)),
       ),
       child: InkWell(
         onTap: () {
@@ -658,9 +518,7 @@ class _CashierPageState extends State<CashierPage> {
 
           // If there's only one variant, add directly
           if (variants.length == 1) {
-            context.read<CashierBloc>().add(
-              CashierAddToCart(product: product, variant: variants.first),
-            );
+            context.read<CashierBloc>().add(CashierAddToCart(product: product, variant: variants.first));
             return;
           }
 
@@ -668,9 +526,7 @@ class _CashierPageState extends State<CashierPage> {
           showModalBottomSheet(
             context: context,
             backgroundColor: Theme.of(context).colorScheme.surface,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-            ),
+            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
             builder: (ctx) {
               final theme = Theme.of(ctx);
               return Padding(
@@ -684,9 +540,7 @@ class _CashierPageState extends State<CashierPage> {
                         width: 40,
                         height: 4,
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.onSurfaceVariant.withValues(
-                            alpha: 0.3,
-                          ),
+                          color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
                           borderRadius: BorderRadius.circular(2),
                         ),
                       ),
@@ -694,18 +548,13 @@ class _CashierPageState extends State<CashierPage> {
                     const SizedBox(height: 16),
                     Text(
                       'Pilih Varian — ${product.name}',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(height: 12),
                     ...variants.map((v) {
-                      final price =
-                          double.tryParse(v.price ?? '0')?.toInt() ?? 0;
+                      final price = double.tryParse(v.price ?? '0')?.toInt() ?? 0;
                       return ListTile(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         leading: Container(
                           width: 40,
                           height: 40,
@@ -713,40 +562,17 @@ class _CashierPageState extends State<CashierPage> {
                             color: theme.colorScheme.primaryContainer,
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: Icon(
-                            Icons.local_offer_outlined,
-                            color: theme.colorScheme.primary,
-                            size: 20,
-                          ),
+                          child: Icon(Icons.local_offer_outlined, color: theme.colorScheme.primary, size: 20),
                         ),
                         title: Text(v.name ?? ''),
                         subtitle: Text(
                           _currency(price),
-                          style: TextStyle(
-                            color: theme.colorScheme.primary,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.w600),
                         ),
                         trailing: FilledButton.tonal(
                           onPressed: () {
-                            context.read<CashierBloc>().add(
-                              CashierAddToCart(product: product, variant: v),
-                            );
+                            context.read<CashierBloc>().add(CashierAddToCart(product: product, variant: v));
                             Navigator.pop(ctx);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  '${product.name} (${v.name}) ditambahkan',
-                                ),
-                                duration: const Duration(milliseconds: 800),
-                                behavior: SnackBarBehavior.floating,
-                                margin: const EdgeInsets.only(
-                                  bottom: 16,
-                                  left: 16,
-                                  right: 16,
-                                ),
-                              ),
-                            );
                           },
                           child: const Text('Tambah'),
                         ),
@@ -766,10 +592,7 @@ class _CashierPageState extends State<CashierPage> {
               child: Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: imageProvider,
-                    fit: BoxFit.cover,
-                  ),
+                  image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
                 ),
               ),
             ),
@@ -780,19 +603,14 @@ class _CashierPageState extends State<CashierPage> {
                 children: [
                   Text(
                     product.category?.name ?? 'Lainnya',
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
+                    style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     product.name ?? '',
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      height: 1.2,
-                    ),
+                    style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600, height: 1.2),
                   ),
                   const SizedBox(height: 8),
                   Row(
@@ -800,9 +618,7 @@ class _CashierPageState extends State<CashierPage> {
                     children: [
                       Expanded(
                         child: Text(
-                          hasMultipleVariants
-                              ? 'Mulai ${_currency(firstPrice)}'
-                              : _currency(firstPrice),
+                          hasMultipleVariants ? 'Mulai ${_currency(firstPrice)}' : _currency(firstPrice),
                           style: theme.textTheme.titleSmall?.copyWith(
                             color: theme.colorScheme.primary,
                             fontWeight: FontWeight.w700,
@@ -820,26 +636,14 @@ class _CashierPageState extends State<CashierPage> {
     );
   }
 
-  Widget _buildCartItemCard(
-    BuildContext context,
-    CartItem item,
-    ThemeData theme,
-  ) {
+  Widget _buildCartItemCard(BuildContext context, CartItem item, ThemeData theme) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3)),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 8, offset: const Offset(0, 2))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -854,16 +658,12 @@ class _CashierPageState extends State<CashierPage> {
                       item.productName,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
                     ),
                     if (item.variantName.isNotEmpty)
                       Text(
                         item.variantName,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
+                        style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                       ),
                     if (item.notes != null && item.notes!.isNotEmpty)
                       Padding(
@@ -880,28 +680,18 @@ class _CashierPageState extends State<CashierPage> {
                 ),
               ),
               IconButton(
-                icon: Icon(
-                  Icons.edit_note_rounded,
-                  size: 18,
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
+                icon: Icon(Icons.edit_note_rounded, size: 18, color: theme.colorScheme.onSurfaceVariant),
                 constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
                 padding: EdgeInsets.zero,
                 tooltip: 'Catatan',
                 onPressed: () => _showNoteDialog(context, item),
               ),
               IconButton(
-                icon: Icon(
-                  Icons.close,
-                  size: 16,
-                  color: theme.colorScheme.error,
-                ),
+                icon: Icon(Icons.close, size: 16, color: theme.colorScheme.error),
                 constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
                 padding: EdgeInsets.zero,
                 tooltip: 'Hapus item',
-                onPressed: () => context.read<CashierBloc>().add(
-                  CashierRemoveFromCart(cartItemId: item.id),
-                ),
+                onPressed: () => context.read<CashierBloc>().add(CashierRemoveFromCart(cartItemId: item.id)),
               ),
             ],
           ),
@@ -920,25 +710,19 @@ class _CashierPageState extends State<CashierPage> {
                     _qtyButton(
                       context,
                       icon: Icons.remove,
-                      onPressed: () => context.read<CashierBloc>().add(
-                        CashierDecrementQty(cartItemId: item.id),
-                      ),
+                      onPressed: () => context.read<CashierBloc>().add(CashierDecrementQty(cartItemId: item.id)),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: Text(
                         '${item.qty}',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
                       ),
                     ),
                     _qtyButton(
                       context,
                       icon: Icons.add,
-                      onPressed: () => context.read<CashierBloc>().add(
-                        CashierIncrementQty(cartItemId: item.id),
-                      ),
+                      onPressed: () => context.read<CashierBloc>().add(CashierIncrementQty(cartItemId: item.id)),
                     ),
                   ],
                 ),
@@ -966,12 +750,7 @@ class _CashierPageState extends State<CashierPage> {
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          title: Text(
-            'Catatan Produk',
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          title: Text('Catatan Produk', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
           content: TextField(
             controller: noteController,
             maxLines: 3,
@@ -981,17 +760,11 @@ class _CashierPageState extends State<CashierPage> {
             ),
           ),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text('Batal'),
-            ),
+            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Batal')),
             FilledButton(
               onPressed: () {
                 context.read<CashierBloc>().add(
-                  CashierUpdateCartItemNote(
-                    cartItemId: item.id,
-                    note: noteController.text,
-                  ),
+                  CashierUpdateCartItemNote(cartItemId: item.id, note: noteController.text),
                 );
                 Navigator.pop(ctx);
               },
@@ -1007,9 +780,7 @@ class _CashierPageState extends State<CashierPage> {
     return showModalBottomSheet(
       context: context,
       backgroundColor: Theme.of(context).colorScheme.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (ctx) {
         final theme = Theme.of(ctx);
         return Padding(
@@ -1023,31 +794,18 @@ class _CashierPageState extends State<CashierPage> {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.onSurfaceVariant.withValues(
-                      alpha: 0.3,
-                    ),
+                    color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
               ),
               const SizedBox(height: 16),
-              Text(
-                'Metode Input Kupon',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              Text('Metode Input Kupon', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
               const SizedBox(height: 12),
               ListTile(
                 title: Text('Input Scanner/Manual'),
-                leading: Icon(
-                  Icons.barcode_reader,
-                  size: 30,
-                  color: theme.colorScheme.primary,
-                ),
-                subtitle: Text(
-                  'Masukkan kode kupon dengan scanner atau manual',
-                ),
+                leading: Icon(Icons.barcode_reader, size: 30, color: theme.colorScheme.primary),
+                subtitle: Text('Masukkan kode kupon dengan scanner atau manual'),
                 trailing: Icon(Icons.arrow_forward),
                 onTap: () {
                   Navigator.pop(ctx);
@@ -1062,9 +820,7 @@ class _CashierPageState extends State<CashierPage> {
                               CashierApplyCoupon(
                                 couponId: state.coupon.id,
                                 couponCode: state.coupon.code,
-                                discount:
-                                    num.tryParse(state.coupon.value ?? '0') ??
-                                    0,
+                                discount: num.tryParse(state.coupon.value ?? '0') ?? 0,
                               ),
                             );
                             Navigator.pop(dialogCtx);
@@ -1076,16 +832,8 @@ class _CashierPageState extends State<CashierPage> {
                               builder: (ctx) {
                                 return AlertDialog(
                                   title: Text('Error'),
-                                  content: Text(
-                                    state.error?.message ??
-                                        'Gagal memuat kupon',
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(ctx),
-                                      child: Text('OK'),
-                                    ),
-                                  ],
+                                  content: Text(state.error?.message ?? 'Gagal memuat kupon'),
+                                  actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: Text('OK'))],
                                 );
                               },
                             );
@@ -1093,9 +841,7 @@ class _CashierPageState extends State<CashierPage> {
                         },
                         builder: (context, state) {
                           return Dialog(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(24),
-                            ),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                             elevation: 0,
                             backgroundColor: Colors.transparent,
                             child: Container(
@@ -1121,45 +867,32 @@ class _CashierPageState extends State<CashierPage> {
                                       Container(
                                         padding: const EdgeInsets.all(12),
                                         decoration: BoxDecoration(
-                                          color: Theme.of(
-                                            context,
-                                          ).colorScheme.primaryContainer,
+                                          color: Theme.of(context).colorScheme.primaryContainer,
                                           shape: BoxShape.circle,
                                         ),
                                         child: Icon(
                                           Icons.discount_rounded,
-                                          color: Theme.of(
-                                            context,
-                                          ).colorScheme.primary,
+                                          color: Theme.of(context).colorScheme.primary,
                                           size: 28,
                                         ),
                                       ),
                                       const SizedBox(width: 16),
                                       Expanded(
                                         child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             Text(
                                               'Input Kode Kupon',
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .titleLarge
-                                                  ?.copyWith(
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
+                                              style: Theme.of(
+                                                context,
+                                              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                                             ),
                                             const SizedBox(height: 4),
                                             Text(
                                               'Masukkan kode promo atau diskon Anda di sini.',
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyMedium
-                                                  ?.copyWith(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .onSurfaceVariant,
-                                                  ),
+                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                              ),
                                             ),
                                           ],
                                         ),
@@ -1172,43 +905,28 @@ class _CashierPageState extends State<CashierPage> {
                                       Expanded(
                                         child: TextField(
                                           autofocus: true,
-                                          textCapitalization:
-                                              TextCapitalization.characters,
+                                          textCapitalization: TextCapitalization.characters,
                                           controller: codeController,
                                           decoration: InputDecoration(
                                             labelText: 'Kode Kupon',
                                             hintText: 'Contoh: PROMO2024',
-                                            prefixIcon: const Icon(
-                                              Icons.local_offer_outlined,
-                                            ),
-                                            border: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(16),
-                                            ),
+                                            prefixIcon: const Icon(Icons.local_offer_outlined),
+                                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
                                             enabledBorder: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(16),
+                                              borderRadius: BorderRadius.circular(16),
                                               borderSide: BorderSide(
-                                                color: Theme.of(
-                                                  context,
-                                                ).colorScheme.outlineVariant,
+                                                color: Theme.of(context).colorScheme.outlineVariant,
                                               ),
                                             ),
                                             focusedBorder: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(16),
+                                              borderRadius: BorderRadius.circular(16),
                                               borderSide: BorderSide(
-                                                color: Theme.of(
-                                                  context,
-                                                ).colorScheme.primary,
+                                                color: Theme.of(context).colorScheme.primary,
                                                 width: 2,
                                               ),
                                             ),
                                             filled: true,
-                                            fillColor: Theme.of(context)
-                                                .colorScheme
-                                                .surface
-                                                .withValues(alpha: 0.5),
+                                            fillColor: Theme.of(context).colorScheme.surface.withValues(alpha: 0.5),
                                           ),
                                         ),
                                       ),
@@ -1220,8 +938,7 @@ class _CashierPageState extends State<CashierPage> {
                                             builder: (ctx) {
                                               bool isScanned = false;
                                               return Dialog(
-                                                backgroundColor:
-                                                    Colors.transparent,
+                                                backgroundColor: Colors.transparent,
                                                 elevation: 0,
                                                 child: Stack(
                                                   alignment: Alignment.center,
@@ -1230,29 +947,15 @@ class _CashierPageState extends State<CashierPage> {
                                                       width: 400,
                                                       height: 400,
                                                       child: ClipRRect(
-                                                        borderRadius:
-                                                            BorderRadius.circular(
-                                                              24,
-                                                            ),
+                                                        borderRadius: BorderRadius.circular(24),
                                                         child: MobileScanner(
                                                           onDetect: (capture) {
-                                                            if (isScanned)
-                                                              return;
-                                                            final List<Barcode>
-                                                            barcodes = capture
-                                                                .barcodes;
-                                                            for (final barcode
-                                                                in barcodes) {
-                                                              if (barcode
-                                                                      .rawValue !=
-                                                                  null) {
-                                                                isScanned =
-                                                                    true;
-                                                                Navigator.pop(
-                                                                  ctx,
-                                                                  barcode
-                                                                      .rawValue,
-                                                                );
+                                                            if (isScanned) return;
+                                                            final List<Barcode> barcodes = capture.barcodes;
+                                                            for (final barcode in barcodes) {
+                                                              if (barcode.rawValue != null) {
+                                                                isScanned = true;
+                                                                Navigator.pop(ctx, barcode.rawValue);
                                                                 break;
                                                               }
                                                             }
@@ -1264,13 +967,8 @@ class _CashierPageState extends State<CashierPage> {
                                                       top: 20,
                                                       right: 20,
                                                       child: IconButton(
-                                                        onPressed: () =>
-                                                            Navigator.pop(ctx),
-                                                        icon: const Icon(
-                                                          Icons.close,
-                                                          color: Colors.white,
-                                                          size: 30,
-                                                        ),
+                                                        onPressed: () => Navigator.pop(ctx),
+                                                        icon: const Icon(Icons.close, color: Colors.white, size: 30),
                                                       ),
                                                     ),
                                                   ],
@@ -1282,10 +980,7 @@ class _CashierPageState extends State<CashierPage> {
                                             codeController.text = result;
                                           }
                                         },
-                                        icon: Icon(
-                                          Icons.camera_alt,
-                                          color: Theme.of(context).primaryColor,
-                                        ),
+                                        icon: Icon(Icons.camera_alt, color: Theme.of(context).primaryColor),
                                       ),
                                     ],
                                   ),
@@ -1294,18 +989,10 @@ class _CashierPageState extends State<CashierPage> {
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
                                       TextButton(
-                                        onPressed: () =>
-                                            Navigator.pop(dialogCtx),
+                                        onPressed: () => Navigator.pop(dialogCtx),
                                         style: TextButton.styleFrom(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 24,
-                                            vertical: 14,
-                                          ),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              12,
-                                            ),
-                                          ),
+                                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                         ),
                                         child: const Text('Batal'),
                                       ),
@@ -1313,28 +1000,14 @@ class _CashierPageState extends State<CashierPage> {
                                       FilledButton(
                                         onPressed: () {
                                           context.read<CouponDetailBloc>().add(
-                                            FetchCouponDetail(
-                                              code: codeController.text,
-                                            ),
+                                            FetchCouponDetail(code: codeController.text),
                                           );
                                         },
                                         style: FilledButton.styleFrom(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 24,
-                                            vertical: 14,
-                                          ),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              12,
-                                            ),
-                                          ),
+                                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                         ),
-                                        child: const Text(
-                                          'Gunakan',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
+                                        child: const Text('Gunakan', style: TextStyle(fontWeight: FontWeight.bold)),
                                       ),
                                     ],
                                   ),
@@ -1350,11 +1023,7 @@ class _CashierPageState extends State<CashierPage> {
               ),
               ListTile(
                 title: Text('Pilih Kupon Langsung'),
-                leading: Icon(
-                  Icons.list,
-                  size: 30,
-                  color: theme.colorScheme.primary,
-                ),
+                leading: Icon(Icons.list, size: 30, color: theme.colorScheme.primary),
                 subtitle: Text('Pilih kupon dari daftar kupon yang tersedia'),
                 trailing: Icon(Icons.arrow_forward),
                 onTap: () {},
@@ -1367,20 +1036,13 @@ class _CashierPageState extends State<CashierPage> {
     );
   }
 
-  Widget _qtyButton(
-    BuildContext context, {
-    required IconData icon,
-    required VoidCallback onPressed,
-  }) {
+  Widget _qtyButton(BuildContext context, {required IconData icon, required VoidCallback onPressed}) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
         borderRadius: BorderRadius.circular(8),
         onTap: onPressed,
-        child: Padding(
-          padding: const EdgeInsets.all(6),
-          child: Icon(icon, size: 16),
-        ),
+        child: Padding(padding: const EdgeInsets.all(6), child: Icon(icon, size: 16)),
       ),
     );
   }

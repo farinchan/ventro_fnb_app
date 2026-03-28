@@ -3,12 +3,14 @@ import 'dart:developer';
 import 'package:dartz/dartz.dart';
 import 'package:ventro_fnb_app/data/datasources/remote_datasource.dart';
 import 'package:ventro_fnb_app/data/models/error_model.dart';
+import 'package:ventro_fnb_app/data/models/req/transaction_model.dart';
 import 'package:ventro_fnb_app/domain/entities/category_entity.dart';
 import 'package:ventro_fnb_app/domain/entities/coupon_entity.dart';
 import 'package:ventro_fnb_app/domain/entities/error_entity.dart';
 import 'package:ventro_fnb_app/domain/entities/login_entity.dart';
 import 'package:ventro_fnb_app/domain/entities/outlet_entity.dart';
 import 'package:ventro_fnb_app/domain/entities/product_entity.dart';
+import 'package:ventro_fnb_app/domain/entities/sale_entity.dart' as sale;
 import 'package:ventro_fnb_app/domain/entities/sale_mode_entity.dart';
 import 'package:ventro_fnb_app/domain/entities/table_entity.dart';
 import 'package:ventro_fnb_app/domain/entities/tax_entity.dart';
@@ -306,6 +308,30 @@ class RepositoryDomainImpl implements RepositoryDomain {
       return Left(e.toEntity());
     } catch (e) {
       log('Coupon detail error: $e', name: 'RepositoryDomainImpl', error: e);
+      return Left(
+        ErrorEntity(status: "error", message: e.toString(), validation: null),
+      );
+    }
+  }
+
+  @override
+  Future<Either<ErrorEntity, sale.SaleEntity>> transaction(TransactionReqModel transactionReqModel) async {
+    try {
+      final result = await remoteDatasource.transaction(transactionReqModel);
+      log(
+        'Transaction successful: ${result.toEntity()}',
+        name: 'RepositoryDomainImpl',
+      );
+      return Right(result.toEntity());
+    } on ErrorModel catch (e) {
+      log(
+        'Transaction error: ${e.toEntity()}',
+        name: 'RepositoryDomainImpl',
+        error: e,
+      );
+      return Left(e.toEntity());
+    } catch (e) {
+      log('Transaction error: $e', name: 'RepositoryDomainImpl', error: e);
       return Left(
         ErrorEntity(status: "error", message: e.toString(), validation: null),
       );

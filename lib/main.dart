@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ventro_fnb_app/core/routes/app_router.dart';
 import 'package:ventro_fnb_app/core/styles/theme/app_theme.dart';
+import 'package:ventro_fnb_app/presentation/bloc/bloc/transaction_bloc.dart';
 import 'package:ventro_fnb_app/presentation/bloc/coupon_detail/coupon_detail_bloc.dart';
 import 'package:ventro_fnb_app/presentation/bloc/table_list/table_list_bloc.dart';
 import 'package:ventro_fnb_app/presentation/bloc/cashier/cashier_bloc.dart';
@@ -46,6 +47,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => getIt<SaleModeListBloc>()),
         BlocProvider(create: (context) => getIt<TableListBloc>()),
         BlocProvider(create: (context) => getIt<CouponDetailBloc>()),
+        BlocProvider(create: (context) => getIt<TransactionBloc>()),
       ],
       child: MaterialApp.router(
         title: 'Ventro FNB',

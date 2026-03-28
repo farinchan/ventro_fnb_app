@@ -46,7 +46,7 @@ class _LoginPageState extends State<LoginPage> {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Login gagal: ${state.error.message}')));
         } else if (state is LoginSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Login berhasil!')));
-          context.goNamed(SelectOutletPage.routeName);
+          context.goNamed(SelectOutletPage.routeName, extra: state.login.user);
         }
       },
       builder: (context, state) {

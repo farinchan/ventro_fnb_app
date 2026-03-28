@@ -82,6 +82,7 @@ class StaffEntity extends Equatable {
     final String? username;
     final String? email;
     final String? phone;
+    final int? outletStaffId;
 
     StaffEntity({
         this.id,
@@ -90,9 +91,10 @@ class StaffEntity extends Equatable {
         this.username,
         this.email,
         this.phone,
+        this.outletStaffId,
     });
 
 
     @override
-    List<Object?> get props => [id, photo, name, username, email, phone];
+    List<Object?> get props => [id, photo, name, username, email, phone, outletStaffId];
   }

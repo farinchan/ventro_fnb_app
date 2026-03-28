@@ -1,3 +1,4 @@
+import 'package:ventro_fnb_app/data/models/req/transaction_model.dart';
 import 'package:ventro_fnb_app/domain/entities/category_entity.dart';
 import 'package:ventro_fnb_app/domain/entities/coupon_entity.dart';
 import 'package:ventro_fnb_app/domain/entities/error_entity.dart';
@@ -5,6 +6,7 @@ import 'package:ventro_fnb_app/domain/entities/login_entity.dart';
 import 'package:dartz/dartz.dart';
 import 'package:ventro_fnb_app/domain/entities/outlet_entity.dart';
 import 'package:ventro_fnb_app/domain/entities/product_entity.dart';
+import 'package:ventro_fnb_app/domain/entities/sale_entity.dart' as sale;
 import 'package:ventro_fnb_app/domain/entities/sale_mode_entity.dart';
 import 'package:ventro_fnb_app/domain/entities/table_entity.dart';
 import 'package:ventro_fnb_app/domain/entities/tax_entity.dart';
@@ -26,4 +28,6 @@ abstract class RepositoryDomain {
 
     Future<Either<ErrorEntity, List<CouponEntity>>> couponList();
     Future<Either<ErrorEntity, CouponEntity>> couponDetail(String code);
+
+    Future<Either<ErrorEntity, sale.SaleEntity>> transaction(TransactionReqModel transactionReqModel);
 }

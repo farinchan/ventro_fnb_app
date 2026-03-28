@@ -32,6 +32,7 @@ class CashierBloc extends Bloc<CashierEvent, CashierState> {
     on<CashierLoadCoupon>(_onLoadCoupon);
     on<CashierApplyCoupon>(_onApplyCoupon);
     on<CashierLoadTax>(_onLoadTax);
+    on<CashierChangeSaleMode>(_onSaleModeSelected);
     on<CashierAddToCart>(_onAddToCart);
     on<CashierRemoveFromCart>(_onRemoveFromCart);
     on<CashierIncrementQty>(_onIncrementQty);
@@ -42,82 +43,52 @@ class CashierBloc extends Bloc<CashierEvent, CashierState> {
     on<CashierClearCart>(_onClearCart);
   }
 
-  Future<void> _onLoadProducts(
-    CashierLoadProducts event,
-    Emitter<CashierState> emit,
-  ) async {
+  Future<void> _onLoadProducts(CashierLoadProducts event, Emitter<CashierState> emit) async {
     emit(state.copyWith(status: CashierStatus.loading));
     final result = await getProductList();
     result.fold(
-      (error) =>
-          emit(state.copyWith(status: CashierStatus.error, error: error)),
-      (products) => emit(
-        state.copyWith(status: CashierStatus.loaded, products: products),
-      ),  
+      (error) => emit(state.copyWith(status: CashierStatus.error, error: error)),
+      (products) => emit(state.copyWith(status: CashierStatus.loaded, products: products)),
     );
   }
 
-  Future<void> _onLoadSaleMode(
-    CashierLoadSaleMode event,
-    Emitter<CashierState> emit,
-  ) async {
+  Future<void> _onLoadSaleMode(CashierLoadSaleMode event, Emitter<CashierState> emit) async {
     emit(state.copyWith(status: CashierStatus.loading));
     final result = await getSaleModeList();
     result.fold(
-      (error) =>
-          emit(state.copyWith(status: CashierStatus.error, error: error)),
-      (saleModeList) => emit(
-        state.copyWith(status: CashierStatus.loaded, saleModeList: saleModeList),
-      ),
+      (error) => emit(state.copyWith(status: CashierStatus.error, error: error)),
+      (saleModeList) => emit(state.copyWith(status: CashierStatus.loaded, saleModeList: saleModeList)),
     );
   }
 
-  Future<void> _onLoadCoupon(
-    CashierLoadCoupon event,
-    Emitter<CashierState> emit,
-  ) async {
+  Future<void> _onLoadCoupon(CashierLoadCoupon event, Emitter<CashierState> emit) async {
     emit(state.copyWith(status: CashierStatus.loading));
     final result = await getCouponList();
     result.fold(
-      (error) =>
-          emit(state.copyWith(status: CashierStatus.error, error: error)),
-      (couponList) => emit(
-        state.copyWith(status: CashierStatus.loaded, couponList: couponList),
-      ),
+      (error) => emit(state.copyWith(status: CashierStatus.error, error: error)),
+      (couponList) => emit(state.copyWith(status: CashierStatus.loaded, couponList: couponList)),
     );
   }
 
-  Future<void> _onApplyCoupon(
-    CashierApplyCoupon event,
-    Emitter<CashierState> emit,
-  ) async {
+  Future<void> _onApplyCoupon(CashierApplyCoupon event, Emitter<CashierState> emit) async {
     final couponCode = event.couponCode;
     final couponId = event.couponId;
     final discount = event.discount;
-    
-    emit(
-      state.copyWith(
-        status: CashierStatus.loaded,
-        couponCode: couponCode,
-        couponId: couponId,
-        discount: discount,
-      ),
-    );
+
+    emit(state.copyWith(status: CashierStatus.loaded, couponCode: couponCode, couponId: couponId, discount: discount));
   }
 
-  Future<void> _onLoadTax(
-    CashierLoadTax event,
-    Emitter<CashierState> emit,
-  ) async {
+  Future<void> _onLoadTax(CashierLoadTax event, Emitter<CashierState> emit) async {
     emit(state.copyWith(status: CashierStatus.loading));
     final result = await getTaxList();
     result.fold(
-      (error) =>
-          emit(state.copyWith(status: CashierStatus.error, error: error)),
-      (taxList) => emit(
-        state.copyWith(status: CashierStatus.loaded, taxList: taxList),
-      ),
+      (error) => emit(state.copyWith(status: CashierStatus.error, error: error)),
+      (taxList) => emit(state.copyWith(status: CashierStatus.loaded, taxList: taxList)),
     );
+  }
+
+  void _onSaleModeSelected(CashierChangeSaleMode event, Emitter<CashierState> emit) {
+    emit(state.copyWith(selectedSaleModeId: event.saleModeId));
   }
 
   void _onAddToCart(CashierAddToCart event, Emitter<CashierState> emit) {
@@ -130,10 +101,7 @@ class CashierBloc extends Bloc<CashierEvent, CashierState> {
     final updatedCart = List<CartItem>.from(state.cartItems);
 
     final existingIndex = updatedCart.indexWhere(
-      (item) =>
-          item.productId == pId &&
-          item.variantId == vId &&
-          (item.notes == null || item.notes!.trim().isEmpty),
+      (item) => item.productId == pId && item.variantId == vId && (item.notes == null || item.notes!.trim().isEmpty),
     );
 
     if (existingIndex != -1) {
@@ -158,13 +126,8 @@ class CashierBloc extends Bloc<CashierEvent, CashierState> {
     emit(state.copyWith(cartItems: updatedCart));
   }
 
-  void _onRemoveFromCart(
-    CashierRemoveFromCart event,
-    Emitter<CashierState> emit,
-  ) {
-    final updatedCart = state.cartItems
-        .where((item) => item.id != event.cartItemId)
-        .toList();
+  void _onRemoveFromCart(CashierRemoveFromCart event, Emitter<CashierState> emit) {
+    final updatedCart = state.cartItems.where((item) => item.id != event.cartItemId).toList();
     emit(state.copyWith(cartItems: updatedCart));
   }
 
@@ -193,17 +156,11 @@ class CashierBloc extends Bloc<CashierEvent, CashierState> {
     emit(state.copyWith(cartItems: updatedCart));
   }
 
-  void _onSearchProducts(
-    CashierSearchProducts event,
-    Emitter<CashierState> emit,
-  ) {
+  void _onSearchProducts(CashierSearchProducts event, Emitter<CashierState> emit) {
     emit(state.copyWith(searchQuery: event.query));
   }
 
-  void _onUpdateCartItemNote(
-    CashierUpdateCartItemNote event,
-    Emitter<CashierState> emit,
-  ) {
+  void _onUpdateCartItemNote(CashierUpdateCartItemNote event, Emitter<CashierState> emit) {
     final updatedCart = state.cartItems.map((item) {
       if (item.id == event.cartItemId) {
         return item.copyWith(notes: event.note);
@@ -213,16 +170,8 @@ class CashierBloc extends Bloc<CashierEvent, CashierState> {
     emit(state.copyWith(cartItems: updatedCart));
   }
 
-  void _onSelectCategory(
-    CashierSelectCategory event,
-    Emitter<CashierState> emit,
-  ) {
-    emit(
-      state.copyWith(
-        selectedCategory: event.category,
-        clearCategory: event.category == null,
-      ),
-    );
+  void _onSelectCategory(CashierSelectCategory event, Emitter<CashierState> emit) {
+    emit(state.copyWith(selectedCategory: event.category, clearCategory: event.category == null));
   }
 
   void _onClearCart(CashierClearCart event, Emitter<CashierState> emit) {

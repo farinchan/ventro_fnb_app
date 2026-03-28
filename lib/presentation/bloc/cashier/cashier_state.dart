@@ -13,6 +13,9 @@ class CashierState extends Equatable {
   final List<CouponEntity> couponList;
   final List<TaxEntity> taxList;
   final List<CartItem> cartItems;
+  final int? selectedTableId;
+  final String? selectedTableName;
+  final int? selectedSaleModeId;
   final String? couponCode;
   final int? couponId;
   final num? discount;
@@ -31,6 +34,9 @@ class CashierState extends Equatable {
     this.couponList = const [],
     this.taxList = const [],
     this.cartItems = const [],
+    this.selectedTableId,
+    this.selectedTableName,
+    this.selectedSaleModeId,
     this.couponCode,
     this.couponId,
     this.discount,
@@ -90,6 +96,9 @@ class CashierState extends Equatable {
     List<CouponEntity>? couponList,
     List<TaxEntity>? taxList,
     List<CartItem>? cartItems,
+    int? selectedTableId,
+    String? selectedTableName,
+    int? selectedSaleModeId,
     String? couponCode,
     int? couponId,
     num? discount,
@@ -109,6 +118,9 @@ class CashierState extends Equatable {
       couponList: couponList ?? this.couponList,
       taxList: taxList ?? this.taxList,
       cartItems: cartItems ?? this.cartItems,
+      selectedTableId: selectedTableId ?? this.selectedTableId,
+      selectedTableName: selectedTableName ?? this.selectedTableName,
+      selectedSaleModeId: selectedSaleModeId ?? this.selectedSaleModeId,
       couponCode: couponCode ?? this.couponCode,
       couponId: couponId ?? this.couponId,
       discount: discount ?? this.discount,
@@ -132,6 +144,9 @@ class CashierState extends Equatable {
     couponList,
     taxList,
     cartItems,
+    selectedTableId,
+    selectedTableName,
+    selectedSaleModeId,
     couponCode,
     couponId,
     discount,

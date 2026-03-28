@@ -15,6 +15,8 @@ import 'package:ventro_fnb_app/domain/usecase/get_profile.dart';
 import 'package:ventro_fnb_app/domain/usecase/get_sale_mode_list.dart';
 import 'package:ventro_fnb_app/domain/usecase/get_table_list.dart';
 import 'package:ventro_fnb_app/domain/usecase/get_tax_list.dart';
+import 'package:ventro_fnb_app/domain/usecase/get_transaction.dart';
+import 'package:ventro_fnb_app/presentation/bloc/bloc/transaction_bloc.dart';
 import 'package:ventro_fnb_app/presentation/bloc/coupon_detail/coupon_detail_bloc.dart';
 import 'package:ventro_fnb_app/presentation/bloc/table_list/table_list_bloc.dart';
 import 'package:ventro_fnb_app/presentation/bloc/cashier/cashier_bloc.dart';
@@ -29,22 +31,16 @@ final getIt = GetIt.instance;
 void init() {
   //bloc
   getIt.registerFactory(() => LoginBloc(getLogin: getIt()));
-  getIt.registerFactory(
-    () => ProfileBloc(getProfile: getIt(), getOutletDetail: getIt()),
-  );
+  getIt.registerFactory(() => ProfileBloc(getProfile: getIt(), getOutletDetail: getIt()));
   getIt.registerFactory(() => OutletListBloc(getOutletList: getIt()));
-  getIt.registerFactory(
-    () => CashierBloc(
-      getProductList: getIt(),
-      getSaleModeList: getIt(),
-      getCouponList: getIt(),
-      getTaxList: getIt(),
-    ),
-  );
   getIt.registerFactory(() => CategoryBloc(getCategoryList: getIt()));
   getIt.registerFactory(() => SaleModeListBloc(getSaleModeList: getIt()));
   getIt.registerFactory(() => TableListBloc(getTableList: getIt()));
   getIt.registerFactory(() => CouponDetailBloc(getCouponDetail: getIt()));
+  getIt.registerFactory(
+    () => CashierBloc(getProductList: getIt(), getSaleModeList: getIt(), getCouponList: getIt(), getTaxList: getIt()),
+  );
+  getIt.registerFactory(() => TransactionBloc(getTransaction: getIt()));
 
   // Use cases
   getIt.registerLazySingleton(() => GetLogin(repository: getIt()));
@@ -58,17 +54,13 @@ void init() {
   getIt.registerLazySingleton(() => GetTaxList(repository: getIt()));
   getIt.registerLazySingleton(() => GetCouponList(repository: getIt()));
   getIt.registerLazySingleton(() => GetCouponDetail(repository: getIt()));
-  
+  getIt.registerLazySingleton(() => GetTransaction(repository: getIt()));
 
   // Repositories
-  getIt.registerLazySingleton<RepositoryDomain>(
-    () => RepositoryDomainImpl(remoteDatasource: getIt()),
-  );
+  getIt.registerLazySingleton<RepositoryDomain>(() => RepositoryDomainImpl(remoteDatasource: getIt()));
 
   // Data sources
-  getIt.registerLazySingleton<RemoteDatasource>(
-    () => RemoteDatasourceImpl(client: getIt()),
-  );
+  getIt.registerLazySingleton<RemoteDatasource>(() => RemoteDatasourceImpl(client: getIt()));
 
   // Http service
   getIt.registerLazySingleton(() => http.Client());
