@@ -10,9 +10,16 @@ part 'transaction_state.dart';
 
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   final GetTransaction getTransaction;
-  TransactionBloc({required this.getTransaction})
-    : super(TransactionInitial()) {
+  TransactionBloc({required this.getTransaction}) : super(TransactionInitial()) {
     on<TransactionSave>((event, emit) async {
+      emit(TransactionLoading());
+      final result = await getTransaction(event.transactionReqModel);
+      result.fold(
+        (error) => emit(TransactionError(error: error)),
+        (saleEntity) => emit(TransactionSaved(saleEntity: saleEntity)),
+      );
+    });
+    on<TransactionPayCash>((event, emit) async {
       emit(TransactionLoading());
       final result = await getTransaction(event.transactionReqModel);
       result.fold(

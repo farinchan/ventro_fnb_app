@@ -13,7 +13,6 @@ import 'package:ventro_fnb_app/presentation/pages/pos/process_page.dart';
 
 class CashierPage extends StatefulWidget {
   static const String routeName = 'cashier';
-
   CashierPage({super.key});
 
   @override
@@ -77,25 +76,46 @@ class _CashierPageState extends State<CashierPage> {
                         ),
                         child: Column(
                           children: [
-                            TextFormField(
-                              controller: _searchController,
-                              decoration: InputDecoration(
-                                hintText: 'Cari produk...',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(color: theme.colorScheme.primary),
+                            Row(
+                              children: [
+                                ElevatedButton.icon(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: theme.colorScheme.onPrimary,
+                                    foregroundColor: theme.colorScheme.primary,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      side: BorderSide(color: theme.colorScheme.primary),
+                                      ),
+                                  ),
+                                  onPressed: () {
+                                  },
+                                  icon: Icon(Icons.shopping_cart),
+                                  label: Text('Tersimpan'),
                                 ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(color: theme.colorScheme.primary),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: TextFormField(
+                                    controller: _searchController,
+                                    decoration: InputDecoration(
+                                      hintText: 'Cari produk...',
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                        borderSide: BorderSide(color: theme.colorScheme.primary),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                        borderSide: BorderSide(color: theme.colorScheme.primary),
+                                      ),
+                                      suffixIcon: _searchController.text.isNotEmpty
+                                          ? IconButton(
+                                              icon: const Icon(Icons.clear, size: 18),
+                                              onPressed: () => _searchController.clear(),
+                                            )
+                                          : const Icon(Icons.search, size: 20),
+                                    ),
+                                  ),
                                 ),
-                                suffixIcon: _searchController.text.isNotEmpty
-                                    ? IconButton(
-                                        icon: const Icon(Icons.clear, size: 18),
-                                        onPressed: () => _searchController.clear(),
-                                      )
-                                    : const Icon(Icons.search, size: 20),
-                              ),
+                              ],
                             ),
                             SizedBox(height: 8),
                             BlocBuilder<CategoryBloc, CategoryState>(

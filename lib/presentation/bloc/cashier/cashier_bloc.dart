@@ -27,6 +27,7 @@ class CashierBloc extends Bloc<CashierEvent, CashierState> {
     required this.getCouponList,
     required this.getTaxList,
   }) : super(const CashierState()) {
+    on<CashierReset>(_onReset);
     on<CashierLoadProducts>(_onLoadProducts);
     on<CashierLoadSaleMode>(_onLoadSaleMode);
     on<CashierLoadCoupon>(_onLoadCoupon);
@@ -41,6 +42,19 @@ class CashierBloc extends Bloc<CashierEvent, CashierState> {
     on<CashierSearchProducts>(_onSearchProducts);
     on<CashierSelectCategory>(_onSelectCategory);
     on<CashierClearCart>(_onClearCart);
+  }
+
+  Future<void> _onReset(CashierReset event, Emitter<CashierState> emit) async {
+    emit(
+      CashierState(
+        status: state.status,
+        products: state.products,
+        saleModeList: state.saleModeList,
+        couponList: state.couponList,
+        taxList: state.taxList,
+        selectedSaleModeId: state.selectedSaleModeId,
+      ),
+    );
   }
 
   Future<void> _onLoadProducts(CashierLoadProducts event, Emitter<CashierState> emit) async {

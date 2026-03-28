@@ -34,7 +34,7 @@ class AppRouter {
         return isLoggingIn ? null : '/login';
       }
 
-      if (outletId == null) { 
+      if (outletId == null) {
         return isSelectingOutlet ? null : '/login';
       }
 
@@ -45,7 +45,11 @@ class AppRouter {
       return null;
     }),
     routes: [
-      GoRoute(path: '/login', name: LoginPage.routeName, builder: (context, state) => const LoginPage()),
+      GoRoute(
+        path: '/login',
+        name: LoginPage.routeName,
+        builder: (context, state) => const LoginPage(),
+      ),
       GoRoute(
         path: '/select-outlet',
         name: SelectOutletPage.routeName,
@@ -62,7 +66,9 @@ class AppRouter {
           GoRoute(
             path: '/cashier',
             name: CashierPage.routeName,
-            builder: (context, state) => CashierPage(),
+            builder: (context, state) {
+              return CashierPage();
+            },
             routes: [
               GoRoute(
                 path: '/process',
@@ -77,17 +83,20 @@ class AppRouter {
           GoRoute(
             path: '/search',
             name: 'search',
-            builder: (context, state) => const PlaceholderContentPage(title: 'Search Page'),
+            builder: (context, state) =>
+                const PlaceholderContentPage(title: 'Search Page'),
           ),
           GoRoute(
             path: '/people',
             name: 'people',
-            builder: (context, state) => const PlaceholderContentPage(title: 'People Page'),
+            builder: (context, state) =>
+                const PlaceholderContentPage(title: 'People Page'),
           ),
           GoRoute(
             path: '/flutter',
             name: 'flutter',
-            builder: (context, state) => const PlaceholderContentPage(title: 'Flutter Page'),
+            builder: (context, state) =>
+                const PlaceholderContentPage(title: 'Flutter Page'),
           ),
         ],
       ),

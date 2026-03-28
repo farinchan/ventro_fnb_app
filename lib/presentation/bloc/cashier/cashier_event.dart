@@ -7,6 +7,13 @@ sealed class CashierEvent extends Equatable {
   List<Object> get props => [];
 }
 
+class CashierReset extends CashierEvent {
+  const CashierReset();
+
+  @override
+  List<Object> get props => [];
+}
+
 /// Load products from the API.
 class CashierLoadProducts extends CashierEvent {
   const CashierLoadProducts();
